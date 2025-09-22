@@ -1,0 +1,37 @@
+<html lang="it">
+<head>
+    <title>Feedback Form</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1><b>Modulo di iscrizione</b></h1>
+    <form id="feedbackForm">
+        <fieldset>
+            <legend>Dati Personali</legend>
+            <label for="nome">Nome:</label><br>
+            <input type="text" id="nome" name="nome" required><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
+        </fieldset>
+        <fieldset>
+            <legend>Data e Ora</legend>
+            <label for="data">Data del Feedback:</label><br>
+            <input type="date" id="data" name="data" required><br>
+            <label for="ora">Ora del Feedback:</label><br>
+            <input type="time" id="ora" name="ora" required>
+        </fieldset>
+        <fieldset>
+            <legend>Messaggio</legend>
+            <label for="messaggio">Messaggio:</label><br>
+            <textarea id="messaggio" name="messaggio" rows="4" cols="40" required></textarea>
+        </fieldset>
+        <fieldset>
+            <legend>Opzioni</legend>
+            <input type="checkbox" id="newsletter" name="newsletter" value="si">
+            <label for="newsletter">Iscriviti alla newsletter</label>
+        </fieldset>
+        <input type="submit" id="submit" value="Invia Feedback">
+        <div id="risultato"></div>
+    </form>
+</body>
+</html>
