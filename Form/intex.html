@@ -1,6 +1,11 @@
-<html lang="it">
-<head>
+<html>
+<head lang="it">
     <title>Feedback Form</title>
+    <style>
+        fieldset { margin-bottom: 15px; }
+        label { display: inline-block; width: 120px; }
+        input, textarea, select { margin-bottom: 8px; }
+    </style>
     <script src="script.js" defer></script>
 </head>
 <body>
@@ -15,10 +20,10 @@
         </fieldset>
         <fieldset>
             <legend>Data e Ora</legend>
-            <label for="data">Data del Feedback:</label><br>
+            <label for="data">Data:</label><br>
             <input type="date" id="data" name="data" required><br>
             <label for="ora">Ora del Feedback:</label><br>
-            <input type="time" id="ora" name="ora" required>
+            <input type="time" id="ora" name="ora" required><br>
         </fieldset>
         <fieldset>
             <legend>Messaggio</legend>
@@ -30,7 +35,7 @@
             <input type="checkbox" id="newsletter" name="newsletter" value="si">
             <label for="newsletter">Iscriviti alla newsletter</label>
         </fieldset>
-        <input type="submit" id="submit" value="Invia Feedback">
+        <input type="submit" id = "submit"></input>
         <div id="risultato"></div>
     </form>
 </body>
