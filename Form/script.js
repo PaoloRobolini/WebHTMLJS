@@ -17,10 +17,11 @@ submit.onclick = (event) => {
     for(const key of Object.keys(datiUtente)) {
         let value = document.getElementById(key).value.trim();
         if (key === "newsletter") {
-        value = document.getElementById(key).checked ? "Sì" : "No";
+        value = document.getElementById(key).checked ? "Si" : "No";
             }    
         messaggio += `<b>${key}:</b> ${value}<br>`;
     }
-        divRisultato.innerHTML = messaggio;
+    
+    divRisultato.innerHTML = messaggio;
      
 }
