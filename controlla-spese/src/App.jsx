@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
-import { useEffect } from 'react'
+import parse from 'html-react-parser';
 
 async function fetchData(){
   const risposta = await fetch("http://127.0.0.1:8090/api/collections/spese/records")
@@ -26,14 +26,20 @@ function App() {
         <div key={item.id}>
           <h2>{item.nome}</h2>
           <p>Importo: {item.prezzo}€</p>
-          <p>Data: {item.data}</p>
+          <p>Data: {
+          new Date(item.created).toLocaleDateString('it-IT', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          })
+          }</p>
           <p>Categoria: {item.tipologia}</p>
           {
-            item.descrizione || <p>Descrizione assente</p>
+            parse(item.descrizione)
           }
         </div>
         )
-    )
+        )
     }
     </>
   )
