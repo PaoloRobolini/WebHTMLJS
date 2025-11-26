@@ -1,3 +1,9 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: winter --default, night;
+  logs: true;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;

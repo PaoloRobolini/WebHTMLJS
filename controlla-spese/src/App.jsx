@@ -18,6 +18,7 @@ function App() {
         prezzo: item.prezzo,
         quantita: item.quantita,
         tipologia: item.tipologia,
+        data_acquisto: item.created,
         id: item.id
       }))
       console.log(listaProdotti)
@@ -31,6 +32,7 @@ function App() {
 
   return (
     <>
+    <input type="checkbox" value="synthwave" className="toggle theme-controller" />
       <div>
 
       </div>

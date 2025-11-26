@@ -5,9 +5,8 @@ function Prodotto({data}) {
     
     const [item, setItem] = useState(data)
 
- console.log(`Dati impostati: ${Object.keys(item)} `)
 
-    return <div>
+    return <div className="glass m-10 pt-10 pb-10 rounded-box 10 text-primary-content/80 text-center" >
         <h2>{item.nome}</h2>
         <p>Importo: {item.prezzo}€</p>
         <p>Data: {
@@ -19,7 +18,7 @@ function Prodotto({data}) {
         }</p>
         <p>Categoria: {item.tipologia}</p>
         {
-
+            parse(item.descrizione)
         }
     </div>
 }
