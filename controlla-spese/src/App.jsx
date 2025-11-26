@@ -1,46 +1,45 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import parse from 'html-react-parser';
+import Prodotto from './prodotto';
 
-async function fetchData(){
-  const risposta = await fetch("http://127.0.0.1:8090/api/collections/spese/records")
-  const data = await risposta.json()
-  console.log(data)
-  return data
-}
+
 
 function App() {
-  const [data, setData] = useState([])
-  
-  useEffect(() => {
-    fetchData().then((data) => setData(data.items))
-  }
-  , []
-)
 
-  console.log(data)
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    async function fetchData() {
+      const risposta = await fetch("http://127.0.0.1:8090/api/collections/spese/records")
+      const data = await risposta.json()
+      const listaProdotti = data.items.map(item => ({
+        nome: item.nome,
+        descrizione: item.descrizione,
+        prezzo: item.prezzo,
+        quantita: item.quantita,
+        tipologia: item.tipologia,
+        id: item.id
+      }))
+      console.log(listaProdotti)
+      setData(listaProdotti)
+    }
+    fetchData()
+  }
+    , []
+  )
+
 
   return (
     <>
-      {data.map((item) => (
-        <div key={item.id}>
-          <h2>{item.nome}</h2>
-          <p>Importo: {item.prezzo}€</p>
-          <p>Data: {
-          new Date(item.created).toLocaleDateString('it-IT', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })
-          }</p>
-          <p>Categoria: {item.tipologia}</p>
-          {
-            parse(item.descrizione)
-          }
-        </div>
+      <div>
+
+      </div>
+      {
+        data.map((item) => (
+            <Prodotto key={item.id} data={item}></Prodotto>
         )
         )
-    }
+      }
     </>
   )
 }
