@@ -53,14 +53,16 @@ function App() {
         alert(`Errore nell'aggiunta: ${response.status} ${response.statusText}`);
         return; // Blocca l'esecuzione se c'è un errore
       }
+        document.getElementById("formSpesa").reset();
+
 
       // Il record creato (con l'ID e la data di creazione assegnati da PocketBase)
       const recordCreato = await response.json();
 
       // 3. Aggiornamento dello Stato React (solo se PocketBase ha avuto successo)
       // Usiamo la funzione di callback per garantire di lavorare sullo stato più recente
-      setData(prevData => [recordCreato, ...prevData]);
-
+      setData(prevData => [...prevData, recordCreato]);
+    
       // 4. Chiudi il Modale
       document.getElementById("modaleAggiungiSpesa").close();
 
@@ -92,29 +94,32 @@ function App() {
           <dialog id="modaleAggiungiSpesa" className="modal" data-theme="dark">
             <div className="modal-box"> {/* Rimosso justify-right, non necessario */}
 
-              {/* INIZIO DEL FORM: Allineamento automatico a sinistra */}
-              <h3 className="font-bold text-lg mb-4">Aggiungi una nuova spesa</h3>
+              <form id="formSpesa">
 
-              {/* CONTENITORE DEL FORM: Rimosse le classi join/center per l'allineamento a sinistra */}
-              {/* Usiamo flex-col per impilare gli input verticalmente */}
-              <div className="flex flex-col items-start mx-auto w-full max-w-xs">
-                <input type="text" placeholder="Nome Spesa" className="input input-bordered w-full mb-2" id="getNome" />
-                <input type="number" placeholder="Importo (€)" className="input input-bordered w-full mb-2" id="getPrezzo" />
-                <input type="number" placeholder="Quantità" className="input input-bordered w-full mb-4" id="getQuantita" />
-                <input type="date" placeholder="Data di Acquisto" className="input input-bordered w-full mb-4" id="getData" />
-                <input type="time" placeholder="Ora di Acquisto" className="input input-bordered w-full mb-4" id="getOra" />
 
-                {/* Select ha bisogno di w-full max-w-xs per allinearsi */}
-                <select defaultValue="Categoria" className="select select-bordered w-full max-w-xs mb-4" id="getCategoria">
-                  <option disabled={true}>Scegli tra le seguenti categorie</option>
-                  <option>Abbigliamento</option>
-                  <option>Alimentari</option>
-                  <option>Giochi ed elettronica</option>
-                  <option>Casa e arredamento</option>
-                </select>
-                <textarea placeholder="Descrizione (opzionale)" className="textarea textarea-bordered w-full max-w-xs mb-4" id="getDescrizione"></textarea>
-              </div>
+                {/* INIZIO DEL FORM: Allineamento automatico a sinistra */}
+                <h3 className="font-bold text-lg mb-4">Aggiungi una nuova spesa</h3>
 
+                {/* CONTENITORE DEL FORM: Rimosse le classi join/center per l'allineamento a sinistra */}
+                {/* Usiamo flex-col per impilare gli input verticalmente */}
+                <div className="flex flex-col items-start mx-auto w-full max-w-xs">
+                  <input type="text" placeholder="Nome Spesa" className="input input-bordered w-full mb-2" id="getNome" />
+                  <input type="number" placeholder="Importo (€)" className="input input-bordered w-full mb-2" id="getPrezzo" />
+                  <input type="number" placeholder="Quantità" className="input input-bordered w-full mb-4" id="getQuantita" />
+                  <input type="date" placeholder="Data di Acquisto" className="input input-bordered w-full mb-4" id="getData" />
+                  <input type="time" placeholder="Ora di Acquisto" className="input input-bordered w-full mb-4" id="getOra" />
+
+                  {/* Select ha bisogno di w-full max-w-xs per allinearsi */}
+                  <select defaultValue="Categoria" className="select select-bordered w-full max-w-xs mb-4" id="getCategoria">
+                    <option disabled={true}>Scegli tra le seguenti categorie</option>
+                    <option>Abbigliamento</option>
+                    <option>Alimentari</option>
+                    <option>Giochi ed elettronica</option>
+                    <option>Casa e arredamento</option>
+                  </select>
+                  <textarea placeholder="Descrizione (opzionale)" className="textarea textarea-bordered w-full max-w-xs mb-4" id="getDescrizione"></textarea>
+                </div>
+              </form>
               {/* FINE DEL MODALE E PULSANTI D'AZIONE */}
               <div className="modal-action">
 
@@ -130,10 +135,12 @@ function App() {
                     nome: document.getElementById("getNome").value,
                     quantita: document.getElementById("getQuantita").value,
                     prezzo: document.getElementById("getPrezzo").value,
-                    categoria: document.getElementById("getCategoria").value,
+                    tipologia: document.getElementById("getCategoria").value,
                     descrizione: document.getElementById("getDescrizione").value,
                     data_acquisto: `${dataAcquisto} ${oraAcquisto}:00Z`
                   }
+                  
+                  console.log(`Nuovo acquisto: ${JSON.stringify(nuovoAcquisto)}`);
                   await handleAggiungiSpesa(nuovoAcquisto);
                 }
                 }>Aggiungi Spesa</button>
