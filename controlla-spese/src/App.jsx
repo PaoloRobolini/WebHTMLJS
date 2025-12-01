@@ -31,18 +31,20 @@ function App() {
 
 
   return (
-    <>
-    <input type="checkbox" value="synthwave" className="toggle theme-controller" />
-      <div>
+    <div className="container mx-auto p-4">
 
-      </div>
-      {
-        data.map((item) => (
+      <div id ="barraNav" className="card fixed top-10 left-50 right-50 z-50 shadow-xl --card-p: 10px glass rounded-box p-4 text-primary-content/80
+      flex justify-center items-center" ><h2>Prova</h2></div>
+      {/* {<div id ="riempi" className = "card pb-40px" ></div>} */}
+      <div id="contenuto" className = "mt-32">
+        {
+          data.map((item) => (
             <Prodotto key={item.id} data={item}></Prodotto>
-        )
-        )
-      }
-    </>
+          )
+          )
+        }
+      </div>
+    </div>
   )
 }
 
