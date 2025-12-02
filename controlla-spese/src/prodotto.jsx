@@ -1,7 +1,6 @@
 import { useState } from "react";
-import parse from 'html-react-parser';
 
-function Prodotto({ data }) {
+function Prodotto({ data, rimuoviSpesa }) {
 
     const [item, setItem] = useState(data)
 
@@ -32,6 +31,9 @@ function Prodotto({ data }) {
                 item.descrizione ? `Descrizione: ${item.descrizione}` : 'Nessuna descrizione fornita'
             }
         </p>
+        <div className ="btn btn-primary btn-ghost btn-circle mr-4" onClick={rimuoviSpesa(item.id)}>
+            <img src="src/assets/cestino.svg" alt="Elimina Spesa" width={24} height={24}/>
+        </div>
     </div>
 }
 

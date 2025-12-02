@@ -28,8 +28,7 @@ function App() {
         prezzo: item.prezzo,
         quantita: item.quantita,
         tipologia: item.tipologia,
-        data_acquisto: item.data_acquisto,
-        data_creazione: item.created,
+        data_acquisto: item.created,
         id: item.id
       }))
       console.log(listaProdotti)
@@ -41,13 +40,14 @@ function App() {
   )
 
   useEffect(() => {
-    // console.log(`Dati aggiornati con successo: ${JSON.stringify(data)}`);
+    console.log(`Dati aggiornati con successo: ${JSON.stringify(data)}`);
   }, [data]
 )
 
 
-  const handleAggiungiSpesa = async (nuovoAcquisto) => {
-    
+  const handleAggiungiSpesa = async (nuovoAcquisto, azione) => {
+    switch(azione){
+      case 'aggiungi' :
           try {
         const response = await fetch("http://127.0.0.1:8090/api/collections/spese/records", {
         method: 'POST',
@@ -75,7 +75,7 @@ function App() {
       console.log(`Creato il record ${JSON.stringify(recordCreato)}`);
       // 3. Aggiornamento dello Stato React (solo se PocketBase ha avuto successo)
       // Usiamo la funzione di callback per garantire di lavorare sullo stato più recente
-      setData(prevData => [recordCreato, ...prevData]);
+      setData(prevData => [...prevData, recordCreato]);
       console.log(`Nuovi dati: ${JSON.stringify(data)}`);
       // 4. Chiudi il Modale
       document.getElementById("modaleAggiungiSpesa").close();
@@ -84,11 +84,16 @@ function App() {
       console.error("Errore di rete o catch finale:", error);
       alert("Impossibile connettersi al server PocketBase.");
     }
+        break;
+    }
+    // 1. Invio a PocketBase (Richiesta POST)
     
   };
 
-  const handleEliminiSpesa = async(acquisto) => {
-    return undefined
+  const handleRimuoviSpesa = (id) => async () => {
+    await pb.collection('spese').delete(id);
+    setData((prevData) => prevData.filter((item) => item.id !== id));
+    console.log(`Spesa con ID ${id} rimossa con successo.`);  
   }
 
   return (
@@ -173,7 +178,7 @@ function App() {
       <div id="contenuto" className="mt-32">
         {
           data.map((item) => (
-            <Prodotto key={item.id} data={item}></Prodotto>
+            <Prodotto key={item.id} data={item} rimuoviSpesa={handleRimuoviSpesa}></Prodotto>
           )
           )
         }
