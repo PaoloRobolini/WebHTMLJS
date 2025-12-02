@@ -5,6 +5,7 @@ function Prodotto({ data }) {
 
     const [item, setItem] = useState(data)
 
+
     const data_acquisto = new Date(item.data_acquisto)
     const options = {
         year: 'numeric',

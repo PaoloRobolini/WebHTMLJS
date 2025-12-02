@@ -2,22 +2,34 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Prodotto from './prodotto'
 import "cally"
+import PocketBase from 'pocketbase';
 
 function App() {
 
   const [data, setData] = useState([])
+  const [filteredData, setFilteredData] = useState([])
+
+  const pb = new PocketBase('http://127.0.0.1:8090');
 
   useEffect(() => {
+    
     async function fetchData() {
-      const risposta = await fetch("http://127.0.0.1:8090/api/collections/spese/records")
-      const data = await risposta.json()
-      const listaProdotti = data.items.map(item => ({
+
+    const fetchData = async () => {  
+      return await pb.collection('spese').getFullList({
+        sort: '-created',
+      });
+  }
+
+      const resp = await fetchData()
+      const listaProdotti = resp.map(item => ({
         nome: item.nome,
         descrizione: item.descrizione,
         prezzo: item.prezzo,
         quantita: item.quantita,
         tipologia: item.tipologia,
-        data_acquisto: item.created,
+        data_acquisto: item.data_acquisto,
+        data_creazione: item.created,
         id: item.id
       }))
       console.log(listaProdotti)
@@ -29,15 +41,15 @@ function App() {
   )
 
   useEffect(() => {
-    // fetch("http://127.0.0.1:8090/api/collections/spese/records")
-  }, [data])
+    // console.log(`Dati aggiornati con successo: ${JSON.stringify(data)}`);
+  }, [data]
+)
 
 
   const handleAggiungiSpesa = async (nuovoAcquisto) => {
-
-    // 1. Invio a PocketBase (Richiesta POST)
-    try {
-      const response = await fetch("http://127.0.0.1:8090/api/collections/spese/records", {
+    
+          try {
+        const response = await fetch("http://127.0.0.1:8090/api/collections/spese/records", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,16 +65,18 @@ function App() {
         alert(`Errore nell'aggiunta: ${response.status} ${response.statusText}`);
         return; // Blocca l'esecuzione se c'è un errore
       }
-        document.getElementById("formSpesa").reset();
+      
+      document.getElementById("formSpesa").reset();
 
 
       // Il record creato (con l'ID e la data di creazione assegnati da PocketBase)
       const recordCreato = await response.json();
 
+      console.log(`Creato il record ${JSON.stringify(recordCreato)}`);
       // 3. Aggiornamento dello Stato React (solo se PocketBase ha avuto successo)
       // Usiamo la funzione di callback per garantire di lavorare sullo stato più recente
-      setData(prevData => [...prevData, recordCreato]);
-    
+      setData(prevData => [recordCreato, ...prevData]);
+      console.log(`Nuovi dati: ${JSON.stringify(data)}`);
       // 4. Chiudi il Modale
       document.getElementById("modaleAggiungiSpesa").close();
 
@@ -70,7 +84,12 @@ function App() {
       console.error("Errore di rete o catch finale:", error);
       alert("Impossibile connettersi al server PocketBase.");
     }
+    
   };
+
+  const handleEliminiSpesa = async(acquisto) => {
+    return undefined
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -95,7 +114,6 @@ function App() {
             <div className="modal-box"> {/* Rimosso justify-right, non necessario */}
 
               <form id="formSpesa">
-
 
                 {/* INIZIO DEL FORM: Allineamento automatico a sinistra */}
                 <h3 className="font-bold text-lg mb-4">Aggiungi una nuova spesa</h3>
@@ -141,14 +159,14 @@ function App() {
                   }
                   
                   console.log(`Nuovo acquisto: ${JSON.stringify(nuovoAcquisto)}`);
-                  await handleAggiungiSpesa(nuovoAcquisto);
+                  await handleAggiungiSpesa(nuovoAcquisto, 'aggiungi');
                 }
                 }>Aggiungi Spesa</button>
               </div>
             </div>
           </dialog>
 
-          <button className="btn btn-secondary btn-sm m-2">Filtra Spese</button>
+          <button className="btn btn-secondary btn-sm m-2">Filtra Spese per...</button>
         </div>
       </div>
       {/* {<div id ="riempi" className = "card pb-40px" ></div>} */}
