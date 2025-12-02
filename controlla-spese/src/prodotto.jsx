@@ -27,9 +27,11 @@ function Prodotto({ data }) {
             userReadableDate
         }</p>
         <p>Categoria: {item.tipologia}</p>
-        {
-            parse(item.descrizione)
-        }
+        <p>
+            {
+                item.descrizione ? `Descrizione: ${item.descrizione}` : 'Nessuna descrizione fornita'
+            }
+        </p>
     </div>
 }
 
