@@ -20,7 +20,7 @@ function Prodotto({ data, rimuoviSpesa }) {
     // console.log(userReadableDate);
 
     return <div className="card --card-p: 10px glass m-10 pt-10 pb-10 rounded-box 10 text-primary-content/80 text-center" >
-        <h2 className="bold">{item.nome}</h2>
+        <h2 className="font-bold text-3xl leading-tight mb-4px">{item.nome}</h2>
         <p>Importo: {item.prezzo}€</p>
         <p>Data: {
             userReadableDate

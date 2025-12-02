@@ -102,7 +102,7 @@ function App() {
         className="
          card fixed 
          top-10 left-10 right-10 z-50  /* Corretto: 40px di stacco laterale */
-         shadow-xl glass rounded-box p-4 
+         shadow-xl glass rounded-box p-4 --noise: 0.1
          text-primary-content/80
          flex justify-start items-center" > {/* Corretto: justify-start per allineare tutto a sinistra nella navbar */}
         <div className="join">
@@ -137,7 +137,6 @@ function App() {
                     <span className="label">Ora di acquisto</span>
                     <input type="time" id="getOra" />
                   </label>
-                  {/* <input type="time" placeholder="Ora di Acquisto" className="input input-bordered w-full mb-4" id="getOra" /> */}
 
                   {/* Select ha bisogno di w-full max-w-xs per allinearsi */}
                   <select defaultValue="Categoria" className="select select-bordered w-full max-w-xs mb-4" id="getCategoria">
