@@ -12,14 +12,14 @@ function App() {
   const pb = new PocketBase('http://127.0.0.1:8090');
 
   useEffect(() => {
-    
+
     async function fetchData() {
 
-    const fetchData = async () => {  
-      return await pb.collection('spese').getFullList({
-        sort: '-created',
-      });
-  }
+      const fetchData = async () => {
+        return await pb.collection('spese').getFullList({
+          sort: '-created',
+        });
+      }
 
       const resp = await fetchData()
       const listaProdotti = resp.map(item => ({
@@ -31,7 +31,7 @@ function App() {
         data_acquisto: item.created,
         id: item.id
       }))
-      console.log(listaProdotti)
+      // console.log(listaProdotti)
       setData(listaProdotti)
     }
     fetchData()
@@ -40,60 +40,60 @@ function App() {
   )
 
   useEffect(() => {
-    console.log(`Dati aggiornati con successo: ${JSON.stringify(data)}`);
+    // console.log(`Dati aggiornati con successo: ${JSON.stringify(data)}`);
   }, [data]
-)
+  )
 
 
   const handleAggiungiSpesa = async (nuovoAcquisto, azione) => {
-    switch(azione){
-      case 'aggiungi' :
-          try {
-        const response = await fetch("http://127.0.0.1:8090/api/collections/spese/records", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(nuovoAcquisto)
-      });
+    switch (azione) {
+      case 'aggiungi':
+        try {
+          const response = await fetch("http://127.0.0.1:8090/api/collections/spese/records", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(nuovoAcquisto)
+          });
 
-      // 2. Gestione della Risposta
-      if (!response.ok) {
-        // Se la risposta non è un successo (es. 400 Bad Request, 500 Internal Error)
-        const errorData = await response.json();
-        console.error("Errore durante l'invio a PocketBase:", errorData);
-        alert(`Errore nell'aggiunta: ${response.status} ${response.statusText}`);
-        return; // Blocca l'esecuzione se c'è un errore
-      }
-      
-      document.getElementById("formSpesa").reset();
+          // 2. Gestione della Risposta
+          if (!response.ok) {
+            // Se la risposta non è un successo (es. 400 Bad Request, 500 Internal Error)
+            const errorData = await response.json();
+            console.error("Errore durante l'invio a PocketBase:", errorData);
+            alert(`Errore nell'aggiunta: ${response.status} ${response.statusText}`);
+            return; // Blocca l'esecuzione se c'è un errore
+          }
+
+          document.getElementById("formSpesa").reset();
 
 
-      // Il record creato (con l'ID e la data di creazione assegnati da PocketBase)
-      const recordCreato = await response.json();
+          // Il record creato (con l'ID e la data di creazione assegnati da PocketBase)
+          const recordCreato = await response.json();
 
-      console.log(`Creato il record ${JSON.stringify(recordCreato)}`);
-      // 3. Aggiornamento dello Stato React (solo se PocketBase ha avuto successo)
-      // Usiamo la funzione di callback per garantire di lavorare sullo stato più recente
-      setData(prevData => [...prevData, recordCreato]);
-      console.log(`Nuovi dati: ${JSON.stringify(data)}`);
-      // 4. Chiudi il Modale
-      document.getElementById("modaleAggiungiSpesa").close();
+          console.log(`Creato il record ${JSON.stringify(recordCreato)}`);
+          // 3. Aggiornamento dello Stato React (solo se PocketBase ha avuto successo)
+          // Usiamo la funzione di callback per garantire di lavorare sullo stato più recente
+          setData(prevData => [...prevData, recordCreato]);
+          console.log(`Nuovi dati: ${JSON.stringify(data)}`);
+          // 4. Chiudi il Modale
+          document.getElementById("modaleAggiungiSpesa").close();
 
-    } catch (error) {
-      console.error("Errore di rete o catch finale:", error);
-      alert("Impossibile connettersi al server PocketBase.");
-    }
+        } catch (error) {
+          console.error("Errore di rete o catch finale:", error);
+          alert("Impossibile connettersi al server PocketBase.");
+        }
         break;
     }
     // 1. Invio a PocketBase (Richiesta POST)
-    
+
   };
 
   const handleRimuoviSpesa = (id) => async () => {
     await pb.collection('spese').delete(id);
     setData((prevData) => prevData.filter((item) => item.id !== id));
-    console.log(`Spesa con ID ${id} rimossa con successo.`);  
+    console.log(`Spesa con ID ${id} rimossa con successo.`);
   }
 
   return (
@@ -129,16 +129,26 @@ function App() {
                   <input type="text" placeholder="Nome Spesa" className="input input-bordered w-full mb-2" id="getNome" />
                   <input type="number" placeholder="Importo (€)" className="input input-bordered w-full mb-2" id="getPrezzo" />
                   <input type="number" placeholder="Quantità" className="input input-bordered w-full mb-4" id="getQuantita" />
-                  <input type="date" placeholder="Data di Acquisto" className="input input-bordered w-full mb-4" id="getData" />
-                  <input type="time" placeholder="Ora di Acquisto" className="input input-bordered w-full mb-4" id="getOra" />
+                  <label className="input mb-4">
+                    <span className="label">Data di acquisto</span>
+                    <input type="date" id="getData" />
+                  </label>
+                  <label className="input mb-4">
+                    <span className="label">Ora di acquisto</span>
+                    <input type="time" id="getOra" />
+                  </label>
+                  {/* <input type="time" placeholder="Ora di Acquisto" className="input input-bordered w-full mb-4" id="getOra" /> */}
 
                   {/* Select ha bisogno di w-full max-w-xs per allinearsi */}
                   <select defaultValue="Categoria" className="select select-bordered w-full max-w-xs mb-4" id="getCategoria">
                     <option disabled={true}>Scegli tra le seguenti categorie</option>
                     <option>Abbigliamento</option>
                     <option>Alimentari</option>
-                    <option>Giochi ed elettronica</option>
+                    <option>Cartoleria</option>
                     <option>Casa e arredamento</option>
+                    <option>Giochi ed elettronica</option>
+                    <option>Medicinali e Salute</option>
+                    <option>Altro</option>
                   </select>
                   <textarea placeholder="Descrizione (opzionale)" className="textarea textarea-bordered w-full max-w-xs mb-4" id="getDescrizione"></textarea>
                 </div>
@@ -162,7 +172,7 @@ function App() {
                     descrizione: document.getElementById("getDescrizione").value,
                     data_acquisto: `${dataAcquisto} ${oraAcquisto}:00Z`
                   }
-                  
+
                   console.log(`Nuovo acquisto: ${JSON.stringify(nuovoAcquisto)}`);
                   await handleAggiungiSpesa(nuovoAcquisto, 'aggiungi');
                 }
