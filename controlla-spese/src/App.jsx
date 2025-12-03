@@ -210,9 +210,10 @@ function App() {
             document.getElementById("modaleFiltro").showModal()
           }}>Filtra per...</button>
 
-          <div className="dropdown mb-72 rounded-border">
+        </div>
+        <div className="dropdown mb-72 rounded-border fixed right-50 top-5">
             <div tabIndex={0} role="button" className="btn m-1">
-              Theme
+              Tema
               <svg
                 width="12px"
                 height="12px"
@@ -239,7 +240,6 @@ function App() {
               ))}
             </ul>
           </div>
-        </div>
       </div>
       {/* {<div id ="riempi" className = "card pb-40px" ></div>} */}
       <div id="contenuto" className="mt-32">
