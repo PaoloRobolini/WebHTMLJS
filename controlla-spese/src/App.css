@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: dark --default, light, winter, dracula;
+  themes: dark, light, winter, synthwave, cyberpunk;
 }
 
 #root {
