@@ -8,9 +8,11 @@ function App() {
 
   const [data, setData] = useState([])
   const [filteredData, setFilteredData] = useState([])
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
-  const THEMES = ['light', 'dark', 'cyberpunk', 'synthwave', 'winter'];
+  const THEMES = ['dark', 'light', 'cyberpunk', 'synthwave', 'winter', 'forest', 'aqua'];
+  
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || THEMES[0]);
+
 
   const handleThemeChange = (event) => {
     const selectedTheme = event.target.value
@@ -114,7 +116,7 @@ function App() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4" data-theme={theme}>
       <div id="barraNav"
         className="
          card fixed 
@@ -122,7 +124,7 @@ function App() {
          shadow-xl glass rounded-box p-4 --noise: 0.1
          text-primary-content/80
          flex justify-start items-center" > {/* Corretto: justify-start per allineare tutto a sinistra nella navbar */}
-        <div className="join">
+        <div className="join" >
           <button className="btn btn-primary btn-sm m-2" onClick={
             () => {
               document.getElementById("modaleAggiungiSpesa").showModal()
@@ -138,7 +140,7 @@ function App() {
               <form id="formSpesa">
 
                 {/* INIZIO DEL FORM: Allineamento automatico a sinistra */}
-                <h3 className="font-bold text-lg mb-4">Aggiungi una nuova spesa</h3>
+                <h2 className="font-bold text-lg mb-4">Aggiungi una nuova spesa</h2>
 
                 {/* CONTENITORE DEL FORM: Rimosse le classi join/center per l'allineamento a sinistra */}
                 {/* Usiamo flex-col per impilare gli input verticalmente */}
@@ -211,7 +213,7 @@ function App() {
           }}>Filtra per...</button>
 
         </div>
-        <div className="dropdown mb-72 rounded-border fixed right-50 top-5">
+        <div className="dropdown mb-72 rounded-border fixed right-50">
             <div tabIndex={0} role="button" className="btn m-1">
               Tema
               <svg
