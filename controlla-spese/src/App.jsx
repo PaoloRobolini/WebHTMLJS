@@ -140,7 +140,7 @@ function App() {
               <form
                 id="formSpesa"
                 onSubmit={async (e) => {
-                  e.preventDefault();      // evita reload PERSONA!!!!!!!
+                  e.preventDefault();      // evita reload [PERSONA!!!!!!!]
                   const form = e.target;   // riferimento al form
 
                   // HTML5 validation
@@ -194,6 +194,7 @@ function App() {
                     placeholder="Importo (€)"
                     className="input input-bordered w-full mb-2"
                     min="0"
+                    step="0.01"
                     required
                   />
 
@@ -244,7 +245,11 @@ function App() {
                 {/* Azioni */}
                 <div className="modal-action">
                   <form method="dialog">
-                    <button className="btn btn-secondary">Annulla</button>
+                    <button className="btn btn-secondary" onClick={
+                      async () => {
+                        document.getElementById("formSpesa").reset()
+                      }
+                    }>Annulla</button>
                   </form>
 
                   <button type="submit" className="btn btn-primary">
