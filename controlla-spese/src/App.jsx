@@ -126,6 +126,7 @@ function App() {
 
   const handleRimuoviSpesa = (id) => async () => {
     await pb.collection('spese').delete(id);
+    // fetch(`http://127.0.0.1:8090/api/collections/spese/records/$`) 
     setData((prevData) => prevData.filter((item) => item.id !== id));
     console.log(`Spesa con ID ${id} rimossa con successo.`);
   }
@@ -156,16 +157,14 @@ function App() {
                 data-theme={theme}
                 id="formSpesa"
                 onSubmit={async (e) => {
-                  e.preventDefault();      // evita reload [PERSONA!!!!!!!]
-                  const form = e.target;   // riferimento al form
+                  e.preventDefault();
 
-                  // HTML5 validation
+                  const form = e.target;
                   if (!form.checkValidity()) {
                     form.reportValidity();
                     return;
                   }
 
-                  // Recupero dati dal form via FormData
                   const formData = new FormData(form);
 
                   const dataAcquisto = formData.get("data");
@@ -180,14 +179,9 @@ function App() {
                     data_acquisto: `${dataAcquisto} ${oraAcquisto}:00Z`
                   };
 
-                  console.log("Nuovo acquisto:", nuovoAcquisto);
-
                   await handleAggiungiSpesa(nuovoAcquisto, "aggiungi");
 
-                  // Reset form
                   form.reset();
-
-                  // Chiudi il modale
                   document.getElementById("modaleAggiungiSpesa").close();
                 }}
               >
@@ -196,83 +190,87 @@ function App() {
 
                 <div className="flex flex-col items-start mx-auto w-full max-w-xs">
 
-                  <input
-                    type="text"
-                    name="nome"
-                    placeholder="Nome Spesa"
-                    className="input rounded-lg w-full mb-2"
-                    required
-                  />
+                    <input
+                      type="text"
+                      name="nome"
+                      placeholder="Nome Spesa"
+                      className="input rounded-lg w-full mb-2"
+                      required
+                    />
 
-                  <input
-                    type="number"
-                    name="prezzo"
-                    placeholder="Importo (€)"
-                    className="input rounded-lg w-full mb-2"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
+                    <input
+                      type="number"
+                      name="prezzo"
+                      placeholder="Importo (€)"
+                      className="input rounded-lg w-full mb-2"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
 
-                  <input
-                    type="number"
-                    name="quantita"
-                    placeholder="Quantità"
-                    className="input rounded-lg w-full mb-4"
-                    min="1"
-                    required
-                  />
+                    <input
+                      type="number"
+                      name="quantita"
+                      placeholder="Quantità"
+                      className="input rounded-lg w-full mb-4"
+                      min="1"
+                      required
+                    />
 
-                  <label className="input rounded-lg mb-4 w-full">
-                    <span className="label-text">Data di acquisto</span>
-                    <input type="date" name="data" required />
-                  </label>
+                    <label className="input rounded-lg mb-4 w-full">
+                      <span className="label-text">Data di acquisto</span>
+                      <input type="date" name="data" required />
+                    </label>
 
-                  <label className="input rounded-lg mb-4 w-full">
-                    <span className="label-text">Ora di acquisto</span>
-                    <input type="time" name="ora" required />
-                  </label>
+                    <label className="input rounded-lg mb-4 w-full">
+                      <span className="label-text">Ora di acquisto</span>
+                      <input type="time" name="ora" required />
+                    </label>
 
-                  <select
-                    name="categoria"
-                    className="select rounded-lg w-full max-w-xs mb-4"
-                    required
-                  >
-                    <option value="" disabled selected>
-                      Scegli categoria
-                    </option>
-                    {
-                      categorie.map(cat => {
-                        return <option>{cat}</option>
-                      })
-                    }
-                  </select>
+                    <select
+                      name="categoria"
+                      className="select rounded-lg w-full max-w-xs mb-4"
+                      required
+                    >
+                      <option value="" disabled selected>
+                        Scegli categoria
+                      </option>
+                      {
+                        categorie.map(cat => {
+                          return <option>{cat}</option>
+                        })
+                      }
+                    </select>
 
-                  <textarea
-                    name="descrizione"
-                    placeholder="Descrizione (opzionale)"
-                    className="textarea textarea-bordered w-full max-w-xs mb-4"
-                  />
+                    <textarea
+                      name="descrizione"
+                      placeholder="Descrizione (opzionale)"
+                      className="textarea textarea-bordered w-full max-w-xs mb-4"
+                    />
+
 
                 </div>
 
-                {/* Azioni */}
                 <div className="modal-action">
                   <form method="dialog">
-                    <button className="btn btn-secondary" onClick={
-                      async () => {
-                        document.getElementById("formSpesa").reset()
-                      }
-                    }>Annulla</button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => document.getElementById("formSpesa").reset()}
+                    >
+                      Annulla
+                    </button>
                   </form>
 
                   <button type="submit" className="btn btn-primary">
                     Aggiungi Spesa
                   </button>
                 </div>
+
               </form>
+
             </div>
           </dialog>
+
 
 
           {/* MODALE FILTRO */}
