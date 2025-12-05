@@ -138,6 +138,7 @@ function App() {
             <div className="modal-box">
 
               <form
+                data-theme = {theme}
                 id="formSpesa"
                 onSubmit={async (e) => {
                   e.preventDefault();      // evita reload [PERSONA!!!!!!!]
@@ -184,7 +185,7 @@ function App() {
                     type="text"
                     name="nome"
                     placeholder="Nome Spesa"
-                    className="input input-bordered w-full mb-2"
+                    className="input rounded-lg w-full mb-2"
                     required
                   />
 
@@ -192,7 +193,7 @@ function App() {
                     type="number"
                     name="prezzo"
                     placeholder="Importo (€)"
-                    className="input input-bordered w-full mb-2"
+                    className="input rounded-lg w-full mb-2"
                     min="0"
                     step="0.01"
                     required
@@ -202,24 +203,24 @@ function App() {
                     type="number"
                     name="quantita"
                     placeholder="Quantità"
-                    className="input input-bordered w-full mb-4"
+                    className="input rounded-lg w-full mb-4"
                     min="1"
                     required
                   />
 
-                  <label className="input mb-4 w-full">
+                  <label className="input rounded-lg mb-4 w-full">
                     <span className="label-text">Data di acquisto</span>
                     <input type="date" name="data" required />
                   </label>
 
-                  <label className="input mb-4 w-full">
+                  <label className="input rounded-lg mb-4 w-full">
                     <span className="label-text">Ora di acquisto</span>
                     <input type="time" name="ora" required />
                   </label>
 
                   <select
                     name="categoria"
-                    className="select select-bordered w-full max-w-xs mb-4"
+                    className="select rounded-lg w-full max-w-xs mb-4"
                     required
                   >
                     <option value="" disabled selected>
