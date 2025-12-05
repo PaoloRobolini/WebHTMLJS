@@ -190,63 +190,63 @@ function App() {
 
                 <div className="flex flex-col items-start mx-auto w-full max-w-xs">
 
-                    <input
-                      type="text"
-                      name="nome"
-                      placeholder="Nome Spesa"
-                      className="input rounded-lg w-full mb-2"
-                      required
-                    />
+                  <input
+                    type="text"
+                    name="nome"
+                    placeholder="Nome Spesa"
+                    className="input rounded-lg w-full mb-2"
+                    required
+                  />
 
-                    <input
-                      type="number"
-                      name="prezzo"
-                      placeholder="Importo (€)"
-                      className="input rounded-lg w-full mb-2"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
+                  <input
+                    type="number"
+                    name="prezzo"
+                    placeholder="Importo (€)"
+                    className="input rounded-lg w-full mb-2"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
 
-                    <input
-                      type="number"
-                      name="quantita"
-                      placeholder="Quantità"
-                      className="input rounded-lg w-full mb-4"
-                      min="1"
-                      required
-                    />
+                  <input
+                    type="number"
+                    name="quantita"
+                    placeholder="Quantità"
+                    className="input rounded-lg w-full mb-4"
+                    min="1"
+                    required
+                  />
 
-                    <label className="input rounded-lg mb-4 w-full">
-                      <span className="label-text">Data di acquisto</span>
-                      <input type="date" name="data" required />
-                    </label>
+                  <label className="input rounded-lg mb-4 w-full">
+                    <span className="label-text">Data di acquisto</span>
+                    <input type="date" name="data" required />
+                  </label>
 
-                    <label className="input rounded-lg mb-4 w-full">
-                      <span className="label-text">Ora di acquisto</span>
-                      <input type="time" name="ora" required />
-                    </label>
+                  <label className="input rounded-lg mb-4 w-full">
+                    <span className="label-text">Ora di acquisto</span>
+                    <input type="time" name="ora" required />
+                  </label>
 
-                    <select
-                      name="categoria"
-                      className="select rounded-lg w-full max-w-xs mb-4"
-                      required
-                    >
-                      <option value="" disabled selected>
-                        Scegli categoria
-                      </option>
-                      {
-                        categorie.map(cat => {
-                          return <option>{cat}</option>
-                        })
-                      }
-                    </select>
+                  <select
+                    name="categoria"
+                    className="select rounded-lg w-full max-w-xs mb-4"
+                    required
+                  >
+                    <option value="" disabled defaultValue>
+                      Scegli categoria
+                    </option>
+                    {
+                      categorie.map(cat => {
+                        return <option key={cat}>{cat}</option>
+                      })
+                    }
+                  </select>
 
-                    <textarea
-                      name="descrizione"
-                      placeholder="Descrizione (opzionale)"
-                      className="textarea textarea-bordered w-full max-w-xs mb-4"
-                    />
+                  <textarea
+                    name="descrizione"
+                    placeholder="Descrizione (opzionale)"
+                    className="textarea textarea-bordered w-full max-w-xs mb-4"
+                  />
 
 
                 </div>
@@ -278,24 +278,28 @@ function App() {
             <div className="modal-box">
               <form id="formFiltro">
                 <h2 className="font-bold text-lg mb-4">Filtra per...</h2>
-                <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
-                  <legend className="fieldset-legend">Login options</legend>
-                  {<label className="label">
-                    <input type="checkbox" defaultChecked className="checkbox" />
-                    Remember me
-                  </label>}
-                </fieldset>
+                <div className="join-vertical mb-4 align-center">
+                  <fieldset className="fieldset rounded-box w-64 border p-4">
+                    <div className="filter" name="filtroData" role="group" aria-label="Filtro Data">
+                      <input className="btn filter-reset" type="radio" name="metaframeworks" aria-label="Tutto" />
+                      <input className="btn" type="radio" name="metaframeworks" aria-label="Ultima Settimana" />
+                      <input className="btn" type="radio" name="metaframeworks" aria-label="Ultimo mese" />
+                      <input className="btn" type="radio" name="metaframeworks" aria-label="Ultimo anno" />
+                    </div>
+                  </fieldset>
+                </div>
+
                 <select
                   name="categoria"
                   className="select rounded-lg w-full max-w-xs mb-4"
                   required
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled defaultValue>
                     Scegli categoria
                   </option>
                   {
                     categorie.map(cat => {
-                      return <option>{cat}</option>
+                      return <option key={cat}>{cat}</option>
                     })
                   }
                 </select>
