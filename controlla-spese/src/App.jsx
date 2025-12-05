@@ -9,9 +9,19 @@ function App() {
   const [data, setData] = useState([])
   const [filteredData, setFilteredData] = useState([])
 
-  const THEMES = ['dark', 'light', 'cyberpunk', 'synthwave', 'winter', 'forest', 'aqua'];
 
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || THEMES[0]);
+  const THEMES_NON_PREDEFINITI = ['cyberpunk', 'synthwave', 'forest', 'aqua'];
+  const THEMES = {
+    'Scuro (default)': 'dark',
+    'Chiaro': 'winter',
+  }
+  THEMES_NON_PREDEFINITI.map(thm => {
+    const maiuscolo = thm[0].toUpperCase() + thm.slice(1)
+    THEMES[maiuscolo] = thm
+  }
+  )
+
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
 
   const handleThemeChange = (event) => {
@@ -30,6 +40,11 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme);
 
   }, [theme]);
+
+  let categorie = ['Abbigliamento', 'Alimentari', 'Cartoleria', 'Casa e Arredamento', 'Giochi ed elettronica',
+    'Medicinali e salute', 'Sport e tempo libero', 'Lavoro']
+
+  categorie = [...categorie.sort(), 'Altro']
 
   const pb = new PocketBase('http://127.0.0.1:8090');
 
@@ -138,7 +153,7 @@ function App() {
             <div className="modal-box">
 
               <form
-                data-theme = {theme}
+                data-theme={theme}
                 id="formSpesa"
                 onSubmit={async (e) => {
                   e.preventDefault();      // evita reload [PERSONA!!!!!!!]
@@ -226,13 +241,11 @@ function App() {
                     <option value="" disabled selected>
                       Scegli categoria
                     </option>
-                    <option>Abbigliamento</option>
-                    <option>Alimentari</option>
-                    <option>Cartoleria</option>
-                    <option>Casa e arredamento</option>
-                    <option>Giochi ed elettronica</option>
-                    <option>Medicinali e Salute</option>
-                    <option>Altro</option>
+                    {
+                      categorie.map(cat => {
+                        return <option>{cat}</option>
+                      })
+                    }
                   </select>
 
                   <textarea
@@ -264,10 +277,30 @@ function App() {
 
           {/* MODALE FILTRO */}
           <dialog id="modaleFiltro" className="modal">
-            <div id="modal-box">
+            <div className="modal-box">
               <form id="formFiltro">
-                <h3 className="font-bold text-lg mb-4">Filtra per...</h3>
-
+                <h2 className="font-bold text-lg mb-4">Filtra per...</h2>
+                <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
+                  <legend className="fieldset-legend">Login options</legend>
+                  {<label className="label">
+                    <input type="checkbox" defaultChecked className="checkbox" />
+                    Remember me
+                  </label>}
+                </fieldset>
+                <select
+                  name="categoria"
+                  className="select rounded-lg w-full max-w-xs mb-4"
+                  required
+                >
+                  <option value="" disabled selected>
+                    Scegli categoria
+                  </option>
+                  {
+                    categorie.map(cat => {
+                      return <option>{cat}</option>
+                    })
+                  }
+                </select>
               </form>
               <div className="modal-action">
 
@@ -301,16 +334,17 @@ function App() {
           {/*SCELTA TEMI*/}
           <ul tabIndex="-1" className="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl"
             onChange={handleThemeChange}
+            data-theme={theme}
           >
 
-            {THEMES.map((thm) => (
+            {Object.keys(THEMES).map((thm) => (
               <li key={thm}>
                 <input
                   type="radio"
                   name="theme-dropdown"
                   className="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
                   aria-label={thm}
-                  value={thm} />
+                  value={THEMES[thm]} />
               </li>
             ))}
           </ul>
