@@ -94,22 +94,12 @@ function App() {
     const minPrezzoMap = Math.min(...prezzi);
     const maxPrezzoMap = Math.max(...prezzi);
 
+    setPrezzoMin(minPrezzoMap)
+    setPrezzoMax(maxPrezzoMap)
 
-    if (minPrezzoMap < prezzoMin) {
-      setPrezzoMin(minPrezzoMap)
-      setPrezzoMinSelezionato(minPrezzoMap)
-    }
-    if (maxPrezzoMap > prezzoMax) {
-      setPrezzoMax(maxPrezzoMap)
-      setPrezzoMaxSelezionato(maxPrezzoMap)
-    }
-
-    if (prezzoMinSelezionato < prezzoMin) {
-      setPrezzoMinSelezionato(minPrezzoMap)
-    }
-
-    if (prezzoMaxSelezionato > prezzoMax) {
-      setPrezzoMaxSelezionato(maxPrezzoMap)
+    if(prezzoMinSelezionato === 0 && prezzoMaxSelezionato === 0){
+      setPrezzoMinSelezionato(minPrezzoMap);
+      setPrezzoMaxSelezionato(maxPrezzoMap);
     }
 
     handleApplicaFiltro();
@@ -118,6 +108,21 @@ function App() {
   }, [data]
   )
 
+
+  //Controlla i prezzi minimo e massimo selezionati
+  useEffect(() => {
+    if (prezzoMinSelezionato < prezzoMin) {
+      setPrezzoMinSelezionato(prezzoMin);
+    }
+    if (prezzoMaxSelezionato > prezzoMax) {
+      setPrezzoMaxSelezionato(prezzoMax);
+    }
+    setFilteredData(data.filter(item => {
+      const prezzoItem = Number(item.prezzo);
+      return prezzoItem >= prezzoMinSelezionato && prezzoItem <= prezzoMaxSelezionato;
+    }));
+    console.log(`Prezzi aggiornati da useEffect: Min = ${prezzoMinSelezionato}, Max = ${prezzoMaxSelezionato}`);
+  }, [prezzoMin, prezzoMax]);
 
   const handlePriceRangeChange = (event) => {
     const { name, value } = event.target;
@@ -207,7 +212,7 @@ function App() {
          top-10 left-10 right-10 z-50  /* Corretto: 40px di stacco laterale */
          shadow-xl glass rounded-box p-4 --noise: 0.1
          text-primary-content/80
-         flex justify-start items-center" > {/* Corretto: justify-start per allineare tutto a sinistra nella navbar */}
+         flex justify-start items-center" > 
         <div className="join" >
           <button className="btn btn-primary btn-sm m-2" onClick={
             () => {
@@ -453,7 +458,7 @@ function App() {
       {/* {<div id ="riempi" className = "card pb-40px" ></div>} */}
       <div id="contenuto" className="mt-32">
         {
-          (filteredData.length > 0 ? filteredData : data).map((item) => (
+          (filteredData.length !== 0 ? filteredData : []).map((item) => (
             <Prodotto key={item.id} data={item} rimuoviSpesa={handleRimuoviSpesa} />
           ))
         }
