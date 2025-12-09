@@ -4,6 +4,8 @@ function Prodotto({ data, rimuoviSpesa }) {
 
     const [item, setItem] = useState(data)
 
+    // console.log(`Prodotto ricevuto: ${JSON.stringify(item)}`);
+
 
     const data_acquisto = new Date(item.data_acquisto)
     const options = {
@@ -32,7 +34,7 @@ function Prodotto({ data, rimuoviSpesa }) {
             }
         </p>
         <div className="join">
-            <div className="btn btn-primary btn-ghost btn-circle mr-4" onClick={rimuoviSpesa(item.id)}>
+            <div className="btn btn-primary btn-ghost btn-circle mr-4" onClick={rimuoviSpesa(item.id, item.prezzo)}>
                 <img src="src/assets/cestino.svg" alt="Elimina Spesa" width={24} height={24} />
             </div>
             <div className="btn btn-primary btn-ghost btn-circle mr-4"  >

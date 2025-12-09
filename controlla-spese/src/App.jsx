@@ -93,6 +93,8 @@ function App() {
 
     if (data.length === 0) return;
 
+    console.log("Calcolo prezzi min e max dai dati..." + JSON.stringify(data));
+
     const prezzi = data.map(item => Number(item.prezzo));
     const minPrezzoMap = Math.min(...prezzi);
     const maxPrezzoMap = Math.max(...prezzi);
@@ -100,14 +102,19 @@ function App() {
     setPrezzoMin(minPrezzoMap)
     setPrezzoMax(maxPrezzoMap)
 
-    if(prezzoMinSelezionato === 0 && prezzoMaxSelezionato === 0){
+    if (prezzoMinSelezionato === 0 && prezzoMaxSelezionato === 0) {
       setPrezzoMinSelezionato(minPrezzoMap);
       setPrezzoMaxSelezionato(maxPrezzoMap);
     }
 
-    handleApplicaFiltro();
+    // console.log(`Applico filtro iniziale sui dati... con min: ${prezzoMin} e max: ${prezzoMax}`);
 
-    console.log(`Prezzi calcolati da useEffect: Min = ${minPrezzoMap}, Max = ${maxPrezzoMap}, prezzi selezionati: Min = ${prezzoMinSelezionato}, Max = ${prezzoMaxSelezionato}`);
+    setFilteredData(data.filter(item => {
+      const prezzoItem = Number(item.prezzo);
+      return prezzoItem >= prezzoMinSelezionato && prezzoItem <= prezzoMaxSelezionato;
+    }));
+
+    // console.log(`Prezzi calcolati da useEffect: Min = ${minPrezzoMap}, Max = ${maxPrezzoMap}, prezzi selezionati: Min = ${prezzoMinSelezionato}, Max = ${prezzoMaxSelezionato}`);
   }, [data]
   )
 
@@ -124,20 +131,30 @@ function App() {
       const prezzoItem = Number(item.prezzo);
       return prezzoItem >= prezzoMinSelezionato && prezzoItem <= prezzoMaxSelezionato;
     }));
-    console.log(`Prezzi aggiornati da useEffect: Min = ${prezzoMinSelezionato}, Max = ${prezzoMaxSelezionato}`);
+    // console.log(`Prezzi aggiornati da useEffect: Min = ${prezzoMinSelezionato}, Max = ${prezzoMaxSelezionato}`);
   }, [prezzoMin, prezzoMax]);
+
+  const getPriceRange = () => {
+      const prezzi = data.map(item => Number(item.prezzo));
+      const minPrezzoMap = Math.min(...prezzi);
+      const maxPrezzoMap = Math.max(...prezzi);
+    return {
+      min: minPrezzoMap,
+      max: maxPrezzoMap
+    }
+  }
 
   const handlePriceRangeChange = (event) => {
     const { name, value } = event.target;
     const valore = Number(value);
     if (name === 'min') {
-      console.log(`Valore Minimo selezionato: ${valore}`);
+      // console.log(`Valore Minimo selezionato: ${valore}`);
       setPrezzoMinSelezionato(valore)
       if (valore > prezzoMaxSelezionato) {
         setPrezzoMaxSelezionato(valore)
       }
     } else if (name === 'max') {
-      console.log(`Valore Massimo selezionato: ${valore}`);
+      // console.log(`Valore Massimo selezionato: ${valore}`);
       setPrezzoMaxSelezionato(valore)
       if (valore < prezzoMinSelezionato) {
         setPrezzoMinSelezionato(valore)
@@ -192,6 +209,7 @@ function App() {
       console.log(`Creato il record ${JSON.stringify(recordCreato)}`);
       // 3. Aggiorna data
       setData(prevData => [recordCreato, ...prevData]);
+      setFilteredData(prevData => [recordCreato, ...prevData]);
       console.log(`Nuovi dati: ${JSON.stringify(data)}`);
       // 4. Chiude il Modale
       document.getElementById("modaleAggiungiSpesa").close();
@@ -205,10 +223,17 @@ function App() {
 
   };
 
-  const handleRimuoviSpesa = (id) => async () => {
+  const handleRimuoviSpesa = (id, prezzo) => async () => {
+    console.log(`Rimuovo spesa con ID: ${id} e Prezzo: ${prezzo}`);
     await pb.collection('spese').delete(id);
     // fetch(`http://127.0.0.1:8090/api/collections/spese/records/$`) 
-    setData((prevData) => prevData.filter((item) => item.id !== id));
+
+    if (isFiltering) {
+      filteredData.filter(item => item.id !== id);
+      cambiamentiPrezzi = getPriceRange();
+      setPrezzoMin(cambiamentiPrezzi.min);
+      setPrezzoMax(cambiamentiPrezzi.max);
+    }
     console.log(`Spesa con ID ${id} rimossa con successo.`);
   }
 
@@ -220,7 +245,7 @@ function App() {
          top-10 left-10 right-10 z-50  /* Corretto: 40px di stacco laterale */
          shadow-xl glass rounded-box p-4 --noise: 0.1
          text-primary-content/80
-         flex justify-start items-center" > 
+         flex justify-start items-center" >
         <div className="join" >
           <button className="btn btn-primary btn-sm m-2" onClick={
             () => {
@@ -366,7 +391,7 @@ function App() {
                 {/* Range Slider per il Prezzo Minimo */}
                 <div className="form-control mb-4">
                   <label className="label">
-                    <span className="label-text">Prezzo Minimo (€):</span>
+                    <span className="label-text">Prezzo Minimo (€):  </span>
                   </label>
                   <input
                     type="range"
