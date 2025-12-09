@@ -15,11 +15,14 @@ function App() {
   const [prezzoMinSelezionato, setPrezzoMinSelezionato] = useState(0)
   const [prezzoMaxSelezionato, setPrezzoMaxSelezionato] = useState(0)
 
+  const [isFiltering, setIsFiltering] = useState(false);
+
   const THEMES_NON_PREDEFINITI = ['cyberpunk', 'synthwave', 'forest', 'aqua'];
   const THEMES = {
     'Scuro (default)': 'dark',
     'Chiaro': 'winter',
   }
+
   THEMES_NON_PREDEFINITI.map(thm => {
     const maiuscolo = thm[0].toUpperCase() + thm.slice(1)
     THEMES[maiuscolo] = thm
@@ -144,10 +147,14 @@ function App() {
 
   const handleResetFiltro = () => {
     setFilteredData(...data);
-    document.getElementById("formFiltro").close();
+    setIsFiltering(false);
+    setPrezzoMinSelezionato(prezzoMin);
+    setPrezzoMaxSelezionato(prezzoMax);
+    document.getElementById("modaleFiltro").close();
   }
 
   const handleApplicaFiltro = () => {
+    setIsFiltering(true);
     const copiaDati = [...data];
     const datiFiltrati = copiaDati.filter(item => {
       const prezzoItem = Number(item.prezzo);
@@ -155,6 +162,7 @@ function App() {
     });
     console.log(`Dati filtrati: ${JSON.stringify(datiFiltrati)}`);
     setFilteredData(datiFiltrati);
+    document.getElementById("modaleFiltro").close();
   }
 
   const handleAggiungiSpesa = async (nuovoAcquisto) => {
@@ -458,7 +466,7 @@ function App() {
       {/* {<div id ="riempi" className = "card pb-40px" ></div>} */}
       <div id="contenuto" className="mt-32">
         {
-          (filteredData.length !== 0 ? filteredData : []).map((item) => (
+          (isFiltering ? filteredData : data).map((item) => (
             <Prodotto key={item.id} data={item} rimuoviSpesa={handleRimuoviSpesa} />
           ))
         }
