@@ -20,7 +20,21 @@ THEMES_NON_PREDEFINITI.forEach(thm => {
 
 const CATEGORIE = ['Abbigliamento', 'Alimentari', 'Cartoleria', 'Casa e Arredamento', 'Giochi ed elettronica',
   'Medicinali e salute', 'Sport e tempo libero', 'Lavoro'].sort().concat('Altro');
-
+  /**
+   * App Component - Expense Tracker Application
+   * 
+   * A React application for managing and tracking expenses with filtering,
+   * categorization, and data visualization.
+   * 
+   * Features:
+   * - Add/remove expenses with details (name, description, price, quantity, category, date)
+   * - Filter expenses by name and price range
+   * - View expenses in a responsive list
+   * - Visualize spending by category (pie chart)
+   * - Track spending trends over time (line chart)
+   * - Multiple theme support with persistence
+   * - Real-time integration with PocketBase backend
+   */
 function App() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
