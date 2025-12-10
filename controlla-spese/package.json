@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nivo/line": "^0.99.0",
+    "@nivo/pie": "^0.99.0",
     "@tailwindcss/vite": "^4.1.17",
     "cally": "^0.8.0",
     "daisyui": "^5.5.5",

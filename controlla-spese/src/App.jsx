@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import './App.css';
 import Prodotto from './prodotto';
-// import "cally"; // Non usato nel codice fornito, rimosso o commentato se non necessario.
 import PocketBase from 'pocketbase';
+import { ResponsivePie } from '@nivo/pie';
+import { ResponsiveLine } from "@nivo/line";
+
 
 // Inizializzazione di PocketBase all'esterno del componente per evitare ricreazioni
 const pb = new PocketBase('http://127.0.0.1:8090');
@@ -111,6 +113,74 @@ function App() {
     // Eseguito la prima volta o quando 'data' cambia
   }, [data, calculatePriceRange]);
 
+
+  const dataPerCategoria = useMemo(() => {
+    const mappa = {};
+
+    data.forEach(item => {
+      if (!mappa[item.tipologia]) mappa[item.tipologia] = 0;
+      mappa[item.tipologia] += Number(item.prezzo) * Number(item.quantita);
+    });
+
+    // Converto nel formato richiesto da Nivo
+    return Object.keys(mappa).map(cat => ({
+      id: cat,
+      label: cat,
+      value: mappa[cat]
+    }));
+  }, [data]);
+
+  const [periodo, setPeriodo] = useState("tutto");
+
+  const dataPerPeriodo = useMemo(() => {
+    if (data.length === 0) return [];
+
+    const oggi = new Date();
+    let dataInizio;
+
+    switch (periodo) {
+      case "settimana":
+        dataInizio = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate() - 7);
+        break;
+      case "mese":
+        dataInizio = new Date(oggi.getFullYear(), oggi.getMonth() - 1, oggi.getDate());
+        break;
+      case "anno":
+        dataInizio = new Date(oggi.getFullYear() - 1, oggi.getMonth(), oggi.getDate());
+        break;
+      default:
+        dataInizio = new Date(0); // tutto
+        break;
+    }
+
+    // Raggruppo la spesa per giorno
+    const mappa = {};
+
+    data.forEach(item => {
+      const dataAcq = new Date(item.data_acquisto);
+      if (dataAcq >= dataInizio) {
+        const giorno = dataAcq.toISOString().split("T")[0];
+        const costo = Number(item.prezzo) * Number(item.quantita);
+
+        if (!mappa[giorno]) mappa[giorno] = 0;
+        mappa[giorno] += costo;
+      }
+    });
+
+    // Ordino le date
+    const dateOrdinate = Object.keys(mappa).sort();
+
+    return [
+      {
+        id: "Spesa Totale",
+        data: dateOrdinate.map(giorno => ({
+          x: giorno,
+          y: mappa[giorno]
+        }))
+      }
+    ];
+  }, [data, periodo]);
+
   // 4. useEffect per Applicazione Filtri (Unico punto di verità per il filtraggio)
   // Questo useEffect viene eseguito ogni volta che uno dei parametri di filtro cambia.
   useEffect(() => {
@@ -127,7 +197,7 @@ function App() {
         item.descrizione.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     // Controlli di sicurezza (es. se i prezzi selezionati escono dal range originale)
     const minClamped = Math.max(prezzoMin, prezzoMinSelezionato);
     const maxClamped = Math.min(prezzoMax, prezzoMaxSelezionato);
@@ -136,15 +206,15 @@ function App() {
     currentFiltered = data.filter(item => {
       const prezzoItem = Number(item.prezzo);
       const isPriceMatch = prezzoItem >= minClamped && prezzoItem <= maxClamped;
-      
+
       if (!nomeRicerca) {
         return isPriceMatch;
       }
-      
+
       const searchTerm = nomeRicerca.toLowerCase();
-      const isTextMatch = item.nome.toLowerCase().includes(searchTerm) || 
-                          item.descrizione.toLowerCase().includes(searchTerm);
-                          
+      const isTextMatch = item.nome.toLowerCase().includes(searchTerm) ||
+        item.descrizione.toLowerCase().includes(searchTerm);
+
       return isPriceMatch && isTextMatch;
     });
 
@@ -156,7 +226,7 @@ function App() {
   // Handler per la ricerca per nome
   const HandleRicercaPerNome = (event) => {
     // Aggiorna lo stato, il filtraggio avverrà nel useEffect di filtro centralizzato
-    setNomeRicerca(event.target.value); 
+    setNomeRicerca(event.target.value);
   }
 
   // Handler per il cambio range di prezzo
@@ -209,19 +279,19 @@ function App() {
       document.getElementById("formSpesa").reset();
 
       const recordCreato = await response.json();
-      
+
       // Aggiorna data con il nuovo elemento (come oggetto JS, PocketBase restituisce l'oggetto completo)
       setData(prevData => [{
-          ...recordCreato,
-          prezzo: Number(recordCreato.prezzo) // Garantisce che 'prezzo' sia numerico
-      }, ...prevData]); 
-      
+        ...recordCreato,
+        prezzo: Number(recordCreato.prezzo) // Garantisce che 'prezzo' sia numerico
+      }, ...prevData]);
 
-        // Se è attivo un filtro, aggiorna i range di prezzo
-        if(recordCreato.prezzo <= prezzoMin && recordCreato.prezzo >= prezzoMax && 
-          (recordCreato.nome.toLowerCase().includes(nomeRicerca.toLowerCase()) || recordCreato.descrizione.toLowerCase().includes(nomeRicerca.toLowerCase()))) {
+
+      // Se è attivo un filtro, aggiorna i range di prezzo
+      if (recordCreato.prezzo <= prezzoMin && recordCreato.prezzo >= prezzoMax &&
+        (recordCreato.nome.toLowerCase().includes(nomeRicerca.toLowerCase()) || recordCreato.descrizione.toLowerCase().includes(nomeRicerca.toLowerCase()))) {
         setFilteredData(prevFiltered => [recordCreato, ...prevFiltered]);
-        }
+      }
 
 
       // Non è necessario aggiornare filteredData qui, lo farà il `useEffect` di filtro
@@ -233,7 +303,7 @@ function App() {
       alert("Impossibile connettersi al server PocketBase.");
     }
   };
-  
+
   // Utilizziamo useCallback per stabilizzare la funzione passata come prop
   const handleRimuoviSpesa = useCallback((id) => async () => {
     try {
@@ -242,24 +312,24 @@ function App() {
       // Aggiorna l'array data rimuovendo l'elemento
       setData(prevData => {
         const newData = prevData.filter(item => item.id !== id);
-        
+
         // CORREZIONE: Ricalcola il range di prezzo totale DOPO l'eliminazione
         // Questo è necessario perché l'elemento rimosso potrebbe essere il min o max.
         const { min, max } = calculatePriceRange(newData);
         setPrezzoMin(min);
         setPrezzoMax(max);
-        
+
         // Se il filtro attuale è fuori dal nuovo range, lo resetta
         setPrezzoMinSelezionato(prevMin => Math.max(prevMin, min));
         setPrezzoMaxSelezionato(prevMax => Math.min(prevMax, max));
-        
+
         return newData;
       });
       // Non è necessario aggiornare filteredData qui, lo farà il `useEffect` di filtro
-      
+
     } catch (error) {
-        console.error("Errore durante la rimozione della spesa:", error);
-        alert("Errore durante la rimozione della spesa.");
+      console.error("Errore durante la rimozione della spesa:", error);
+      alert("Errore durante la rimozione della spesa.");
     }
   }, [calculatePriceRange]); // Inserisci calculatePriceRange nelle dipendenze
 
@@ -268,11 +338,11 @@ function App() {
     <div className="container mx-auto p-4" data-theme={theme}>
       <div id="barraNav"
         className="
-          card fixed 
-          top-4 left-4 right-4 z-50 
-          shadow-xl glass rounded-box p-4
-          text-primary-content/80
-          flex justify-between items-center" > 
+    card fixed 
+    top-4 left-4 right-4 z-50 
+    shadow-xl glass rounded-box p-4
+    text-primary-content/80
+    flex justify-between items-center">
         <div className="flex items-center">
           <button className="btn btn-primary btn-sm m-2" onClick={
             () => {
@@ -285,7 +355,7 @@ function App() {
           {/* RICERCA PER NOME*/}
           <input type="text" placeholder="Cerca Spesa"
             className="input input-bordered input-primary w-full max-w-xs m-2"
-            id = "ricercaNome"
+            id="ricercaNome"
             value={nomeRicerca} // Aggiunto per permettere l'aggiornamento dopo il reset
             onChange={HandleRicercaPerNome}
           />
@@ -297,7 +367,7 @@ function App() {
               document.getElementById("modaleFiltro").showModal()
             }}>Range di prezzo</button>
         </div>
-        
+
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn m-1">
             Tema
@@ -321,15 +391,15 @@ function App() {
                   name="theme-dropdown"
                   className="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
                   aria-label={thm}
-                  value={THEMES_MAP[thm]} 
+                  value={THEMES_MAP[thm]}
                   checked={THEMES_MAP[thm] === theme} // Aggiunto per evidenziare il tema corrente
-                  onChange={() => {}} // Dummy handler per evitare warning se 'checked' è usato
-                  />
+                  onChange={() => { }} // Dummy handler per evitare warning se 'checked' è usato
+                />
               </li>
             ))}
           </ul>
         </div>
-        
+
         {/* MODALE AGGIUNTA */}
         <dialog id="modaleAggiungiSpesa" className="modal">
           <div className="modal-box">
@@ -376,7 +446,7 @@ function App() {
 
                 <label className="label">Ora di acquisto</label>
                 <input type="time" name="ora" required className='input rounded-lg w-full mb-2' />
-                
+
                 <select
                   name="categoria"
                   className="select rounded-lg w-full max-w-xs mb-4"
@@ -427,7 +497,7 @@ function App() {
         {/* MODALE FILTRO PER PREZZO*/}
         <dialog id="modaleFiltro" className="modal">
           <div className="modal-box" data-theme={theme}>
-            <form id="formFiltro" onSubmit={(e) => { e.preventDefault(); handleApplicaFiltro(); }}> 
+            <form id="formFiltro" onSubmit={(e) => { e.preventDefault(); handleApplicaFiltro(); }}>
               <h2 className="font-bold text-lg mb-4">Filtra per prezzo</h2>
 
               {/* Visualizzazione del range di prezzo corrente */}
@@ -491,26 +561,142 @@ function App() {
                 {/* L'applicazione è automatica, il pulsante chiude solo il modale */}
                 <button type="submit" className="btn btn-primary">
                   Chiudi e Visualizza
-                </button> 
+                </button>
               </div>
             </form>
           </div>
         </dialog>
       </div>
-      
-      <div id="contenuto" className="mt-32">
-        {
-          (filteredData.length === 0 && data.length > 0) && (prezzoMinSelezionato !== prezzoMin || prezzoMaxSelezionato !== prezzoMax || nomeRicerca !== "") ?
-          <div role="alert" className="alert alert-warning">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-            <span>Nessun risultato trovato per i criteri di ricerca.</span>
+
+      <div
+        id="contenuto"
+        className="pt-32 grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        <div className="p-4">
+          {
+            (filteredData.length === 0 && data.length > 0 &&
+              (prezzoMinSelezionato !== prezzoMin ||
+                prezzoMaxSelezionato !== prezzoMax ||
+                nomeRicerca !== "")) ? (
+              <div role="alert" className="alert alert-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>Nessun risultato trovato per i criteri di ricerca.</span>
+              </div>
+            ) : (
+              filteredData.map((item) => (
+                <Prodotto key={item.id} data={item} rimuoviSpesa={handleRimuoviSpesa} />
+              ))
+            )
+          }
+        </div>
+
+        {/* COLONNA SINISTRA → GRAFICO A TORTA */}
+        <div className="p-4 card bg-base-200 shadow-xl">
+          <h2 className="text-xl font-bold mb-4">Spesa totale per categoria</h2>
+
+          {/* --- GRAFICO A TORTA --- */}
+          <div style={{ height: 350 }}>
+            <ResponsivePie
+              data={dataPerCategoria}
+              margin={{ top: 30, right: 80, bottom: 30, left: 80 }}
+              innerRadius={0.5}
+              padAngle={1}
+              cornerRadius={3}
+              activeOuterRadiusOffset={8}
+              arcLinkLabelsSkipAngle={10}
+              arcLabelsSkipAngle={10}
+              colors={{ scheme: "paired" }}
+              tooltip={({ datum }) => (
+                <div
+                  style={{
+                    padding: "6px 12px",
+                    background: "white",
+                    color: "black",
+                    borderRadius: "6px",
+                    border: "1px solid #ddd",
+                    fontWeight: "bold"
+                  }}
+                >
+                  {datum.label}: €{datum.value.toFixed(2)}
+                </div>
+              )}
+            />
           </div>
-          : filteredData.map((item) => ( // Ora si usa SOLO filteredData
-            <Prodotto key={item.id} data={item} rimuoviSpesa={handleRimuoviSpesa} />
-          ))
-        }
+
+          <hr className="my-6" />
+
+          {/* --- SELETTORE PERIODO --- */}
+          <div className="mb-4">
+            <label className="font-bold mr-2">Periodo:</label>
+            <select
+              value={periodo}
+              onChange={(e) => setPeriodo(e.target.value)}
+              className="select select-bordered"
+            >
+              <option value="tutto">Tutto</option>
+              <option value="anno">Ultimo anno</option>
+              <option value="mese">Ultimo mese</option>
+              <option value="settimana">Ultima settimana</option>
+            </select>
+          </div>
+
+          {/* --- GRAFICO LINEA --- */}
+          <h3 className="text-lg font-bold mt-4 mb-2">
+            Andamento della spesa nel tempo
+          </h3>
+
+          <div style={{ height: 300 }}>
+            <ResponsiveLine
+              data={dataPerPeriodo}
+              margin={{ top: 30, right: 50, bottom: 50, left: 60 }}
+              xScale={{ type: "point" }}
+              yScale={{ type: "linear", min: "auto", max: "auto", stacked: false }}
+              axisBottom={{
+                tickRotation: -45
+              }}
+              colors={{ scheme: "set2" }}
+              pointSize={8}
+              pointBorderWidth={2}
+              useMesh={true}
+              tooltip={({ datum, point }) => {
+                const label = datum?.label ?? point?.data?.xFormatted;
+                const value = datum?.value ?? point?.data?.yFormatted;
+
+                return (
+                  <div
+                    style={{
+                      padding: "8px 14px",
+                      background: "rgba(255,255,255,0.97)",
+                      color: "black",
+                      borderRadius: "8px",
+                      border: "1px solid #ccc",
+                      fontWeight: "bold",
+                      fontSize: "0.85rem",
+                      boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                      zIndex: 999999,
+                      pointerEvents: "none",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {label}: €{Number(value).toFixed(2)}
+                  </div>
+                );
+              }}
+
+
+            />
+          </div>
+        </div>
+
+
+
+
       </div>
+
     </div>
+
   )
 }
 
