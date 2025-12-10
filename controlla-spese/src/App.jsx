@@ -572,7 +572,7 @@ function App() {
         id="contenuto"
         className="pt-32 grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <div className="p-4">
+        <div className="p-4 space-y-4">
           {
             (filteredData.length === 0 && data.length > 0 &&
               (prezzoMinSelezionato !== prezzoMin ||
@@ -593,7 +593,7 @@ function App() {
         </div>
 
         {/* COLONNA SINISTRA → GRAFICO A TORTA */}
-        <div className="p-4 card bg-base-200 shadow-xl">
+        <div className="p-4 card bg-base-200 shadow-xl space-y-4">
           <h2 className="text-xl font-bold mb-4">Spesa totale per categoria</h2>
 
           {/* --- GRAFICO A TORTA --- */}
@@ -647,7 +647,7 @@ function App() {
             Andamento della spesa nel tempo
           </h3>
 
-          <div style={{ height: 300 }}>
+          {<div style={{ height: 300 }}>
             <ResponsiveLine
               data={dataPerPeriodo}
               margin={{ top: 30, right: 50, bottom: 50, left: 60 }}
@@ -687,7 +687,7 @@ function App() {
 
 
             />
-          </div>
+          </div>}
         </div>
 
 
