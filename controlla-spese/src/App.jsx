@@ -20,21 +20,21 @@ THEMES_NON_PREDEFINITI.forEach(thm => {
 
 const CATEGORIE = ['Abbigliamento', 'Alimentari', 'Cartoleria', 'Casa e Arredamento', 'Giochi ed elettronica',
   'Medicinali e salute', 'Sport e tempo libero', 'Lavoro'].sort().concat('Altro');
-  /**
-   * App Component - Expense Tracker Application
-   * 
-   * A React application for managing and tracking expenses with filtering,
-   * categorization, and data visualization.
-   * 
-   * Features:
-   * - Add/remove expenses with details (name, description, price, quantity, category, date)
-   * - Filter expenses by name and price range
-   * - View expenses in a responsive list
-   * - Visualize spending by category (pie chart)
-   * - Track spending trends over time (line chart)
-   * - Multiple theme support with persistence
-   * - Real-time integration with PocketBase backend
-   */
+/**
+ * App Component - Expense Tracker Application
+ * 
+ * A React application for managing and tracking expenses with filtering,
+ * categorization, and data visualization.
+ * 
+ * Features:
+ * - Add/remove expenses with details (name, description, price, quantity, category, date)
+ * - Filter expenses by name and price range
+ * - View expenses in a responsive list
+ * - Visualize spending by category (pie chart)
+ * - Track spending trends over time (line chart)
+ * - Multiple theme support with persistence
+ * - Real-time integration with PocketBase backend
+ */
 function App() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -132,9 +132,7 @@ function App() {
   const handleResetFiltro = () => {
     setPrezzoMinSel(prezzoMin);
     setPrezzoMaxSel(prezzoMax);
-    setNomeRicerca("");
     setRangeModificato(false);
-    document.getElementById("ricercaNome").value = "";
     document.getElementById("modaleFiltro").close();
   }
 
@@ -159,15 +157,30 @@ function App() {
       document.getElementById("formSpesa").reset();
       document.getElementById("modaleAggiungiSpesa").close();
 
+      if (recordCreato.prezzo < prezzoMin || recordCreato.prezzo > prezzoMax &&
+        recordCreato.nome.toLowerCase().includes(nomeRicerca.toLowerCase()) || recordCreato.descrizione.toLowerCase().includes(nomeRicerca.toLowerCase())) {
+        setFilteredData(prev => [...prev, recordCreato])
+      }
+
+      setPrezzoMinSel(Math.min(prezzoMinSel, recordCreato.prezzo));
+      setPrezzoMaxSel(Math.max(prezzoMaxSel, recordCreato.prezzo));
     } catch (err) {
       console.error(err);
-      alert("Errore di rete");
+      alert(`Errore di rete: ${err.message}`);
     }
   }
 
   const handleRimuoviSpesa = useCallback((id) => async () => {
     try {
-      await pb.collection('spese').delete(id);
+      const res = await fetch(`http://127.0.0.1:8090/api/collections/spese/records/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        console.error(errData);
+        alert(`Errore: ${res.status}`);
+        return;
+      }
       setData(prev => {
         const newData = prev.filter(item => item.id !== id);
         const { min, max } = calculatePriceRange(newData);
@@ -246,7 +259,7 @@ function App() {
         <div className="flex items-center">
           <button className="btn btn-primary btn-sm m-2" onClick={() => document.getElementById("modaleAggiungiSpesa").showModal()}>Aggiungi Spesa</button>
           <input type="text" placeholder="Cerca Spesa" className="input input-bordered input-primary w-full max-w-xs m-2" id="ricercaNome" value={nomeRicerca} onChange={HandleRicercaPerNome} />
-          <button className="btn btn-secondary btn-sm m-2" disabled={data.length === 0} onClick={() => document.getElementById("modaleFiltro").showModal()}>Range di prezzo</button>
+          <button className="btn btn-secondary btn-sm m-2" disabled={data.length === 0} onClick={() => document.getElementById("modaleFiltro").showModal()}>Filtra per prezzo</button>
         </div>
 
         <div className="dropdown dropdown-end">
@@ -320,7 +333,8 @@ function App() {
               tooltip={({ datum, point }) => {
                 const label = datum?.label ?? point?.data?.xFormatted;
                 const value = datum?.value ?? point?.data?.yFormatted;
-                return <div style={{ padding: "8px 14px", background: "rgba(255,255,255,0.97)", color: "black", borderRadius: "8px", border: "1px solid #ccc", fontWeight: "bold", fontSize: "0.85rem", boxShadow: "0 4px 14px rgba(0,0,0,0.25)", pointerEvents: "none" }}>{label}: €{Number(value).toFixed(2)}</div>
+                return <div style={{ padding: "8px 14px", background: "rgba(255,255,255,0.97)", color: "black", borderRadius: "8px", border: "1px solid #ccc", 
+                fontWeight: "bold", fontSize: "0.85rem", boxShadow: "0 4px 14px rgba(0,0,0,0.25)", pointerEvents: "none" }}>{label}: €{Number(value).toFixed(2)}</div>
               }}
             />
           </div>
@@ -331,22 +345,50 @@ function App() {
       {/* MODALE AGGIUNGI SPESA */}
       <dialog id="modaleAggiungiSpesa" className="modal">
         <form method="dialog" id="formSpesa" className="modal-box flex flex-col gap-4">
-          <h3 className="font-bold text-lg">Aggiungi nuova spesa</h3>
+          <h2 className="font-bold text-lg">Aggiungi nuova spesa</h2>
 
-          <input type="text" name="nome" placeholder="Nome prodotto" className="input input-bordered w-full" required />
-          <input type="text" name="descrizione" placeholder="Descrizione" className="input input-bordered w-full" />
-          <input type="number" name="prezzo" placeholder="Prezzo (€)" className="input input-bordered w-full" step="0.01" min="0" required />
-          <input type="number" name="quantita" placeholder="Quantità" className="input input-bordered w-full" min="1" defaultValue={1} required />
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Nome del prodotto*</legend>
+            <input type="text" name="nome" placeholder="Prodotto" className="input input-bordered w-full" required />
+          </fieldset>
 
-          <select name="tipologia" className="select select-bordered w-full" required>
-            {CATEGORIE.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Prezzo unitario*</legend>
+            <input type="number" name="prezzo" placeholder="Prezzo unitario (€)" className="input input-bordered w-full" step="0.01" min="0.01" required />
+          </fieldset>
 
-          <input type="date" name="data_acquisto" className="input input-bordered w-full" required />
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Quantità del prodotto*</legend>
+            <input type="number" name="quantita" placeholder="Quantità" className="input input-bordered w-full" min="1" defaultValue={1} required />
+          </fieldset>
+
+
+          <label className="select mt-4">
+            <span className="label">Categoria</span>
+            <select name="tipologia" className="select select-bordered w-full" required>
+              {CATEGORIE.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </label>
+
+
+
+          <label className="input mt-3">
+            <span className="label">Data di acquisto*</span>
+            <input type="date" name="data_acquisto" className="input input-bordered w-full" required />
+          </label>
+
+          <label className="input mt-3">
+            <span className="label">Ora di acquisto*</span>
+            <input type="time" name="ora_acquisto" className="input input-bordered w-full" required />
+          </label>
+
+          <textarea type="textarea" name="descrizione" placeholder="Descrizione (opzionale)" className="input input-bordered w-full mt-3" />
+
 
           <div className="modal-action">
             <button type="button" className="btn btn-ghost" onClick={() => document.getElementById("modaleAggiungiSpesa").close()}>Chiudi</button>
             <button type="submit" className="btn btn-primary" onClick={(e) => {
+              document.getElementById("modaleAggiungiSpesa").checkValidity();
               e.preventDefault();
               const form = e.target.closest("form");
               const nuovoAcquisto = {
