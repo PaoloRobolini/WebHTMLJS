@@ -17,7 +17,6 @@ def hello_world():
     variabile = "<p>Hello, World!</p>"
     return variabile
 
-@app.route
 
 @app.route('/generaLibri')
 def genera_libri():
@@ -33,10 +32,22 @@ def genera_libri():
             'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
         }
         libri.append(libro)
-    return json.dumps(libri), 200
+    return "<p>Libri generati con successo!</p>", 201  
+
+@app.route('/api/data/test')
+def test():
+    libro = {
+            'id': 1,
+            'titolo': fake.sentence(nb_words=4),
+            'autore': fake.name(),
+            'anno_pubblicazione': fake.year(),
+            'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
+        }
+    return json.dumps(libro), 200
 
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
+    global libri
     return json.dumps(libri), 200
 
 @app.route('/api/data/post', methods=['POST'])
