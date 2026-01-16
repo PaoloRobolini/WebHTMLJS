@@ -14,6 +14,7 @@ function App() {
         }
         const jsonData = await response.json()
         setData(jsonData)
+        console.log('Dati fetchati:', jsonData)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
