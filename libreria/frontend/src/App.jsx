@@ -49,12 +49,8 @@ function App() {
   return (
     <>
 
-      <button
-        type="button"
-        className="btn btn-primary fixed top-15 left-15 z-50"
-        onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}
-      >
-        {showFormAggiunta ? 'Chiudi form' : 'Aggiungi libro'}
+      <button type="button" className="btn btn-primary fixed top-15 left-15 z-50" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+        Aggiungi Un Libro
       </button>
 
       {
@@ -76,15 +72,20 @@ function App() {
                     }
                     setData([...data, newUser])
                     chiamataPost(newUser)
+                    setFormAggiunta(false)
+                    e.target.reset()
                   }}>
-                  
-                  <input type="text" name="titolo" placeholder="Titolo" required />
-                  <input type="text" name="autore" placeholder="Autore" required />
-                  <input type="number" name="anno" placeholder="Anno pubblicazione" required />
-                  <input type="text" name="genere" placeholder="Genere" required />
-                  <button type="submit">Submit</button>
+                  <div className="join join-vertical"></div>
+                  <input className="join-item mb-4" type="text" name="titolo" placeholder="Titolo" required />
+                  <input className="join-item mb-4" type="text" name="autore" placeholder="Autore" required />
+                  <input className="join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required />
+                  <input className="join-item mb-4" type="text" name="genere" placeholder="Genere" required />
+                  <button className="join-item btn btn-primary" type="submit">Submit</button>
                 </form>
-                <button onClick={() => setFormAggiunta(false)} className="px-4 py-2 bg-gray-300 text-gray-800 
+                <button onClick={() => {
+                  setFormAggiunta(false)
+                  e.target.reset()
+                }} className="px-4 py-2 bg-gray-300 text-gray-800 
               font-semibold rounded-lg hover:bg-gray-400 transition">Annulla</button>
               </div>
             </div>
