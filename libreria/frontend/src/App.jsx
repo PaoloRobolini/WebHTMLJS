@@ -4,6 +4,7 @@ import './App.css'
 function App() {
 
   const [data, setData] = useState([])
+  const [showFormAggiunta, setFormAggiunta] = useState(false)
 
   useState(() => {
     const fetchData = async () => {
@@ -43,7 +44,9 @@ function App() {
 
   return (
     <>
-      <form
+
+    {
+      (showFormAggiunta &&  <form
       onSubmit={async (e) => {
         e.preventDefault()
         const formData = new FormData(e.target)
@@ -56,30 +59,19 @@ function App() {
         }
         setData([...data, newUser])
         chiamataPost(newUser)
-      }}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        maxWidth: '400px',
-        margin: '32px auto',
-        padding: '24px',
-        borderRadius: '12px',
-        background: '#fff',
-        boxShadow: '0 4px 16px rgba(44, 62, 80, 0.08)',
-        border: '1px solid #e1e1e1' 
-      }}
-    >
+      }}>
       <input type="text" name="titolo" placeholder="Titolo" required />
       <input type="text" name="autore" placeholder="Autore" required />
       <input type="number" name="anno" placeholder="Anno pubblicazione" required />
       <input type="text" name="genere" placeholder="Genere" required />
       <button type="submit">Submit</button>
-    </form>
+    </form>)
+    }
+     
 
-      <div>
+      <div className="max-w-lg mx-auto px-4">
         {data.map((item) => (
-          <div key={item.id} style={{border: '1px solid #ccc', margin: '8px', padding: '8px'}}>
+          <div key={item.id} className="card glass p-6 mb-4 shadow-lg text-center">
             <h3>{item.titolo}</h3>
             <p>Autore: {item.autore}</p>
             <p>Anno: {item.anno}</p>

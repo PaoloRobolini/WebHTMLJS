@@ -26,12 +26,13 @@ def genera_libri():
     fake = Faker('it_IT')
     global libri
     libri = []
-    for i in range(20):
+    n_libri = 20
+    for i in range(n_libri):
         libro = {
             'id': i + 1,
-            'titolo': fake.sentence(nb_words=4),
+            'titolo': fake.sentence(nb_words=4).replace('.', ''),
             'autore': fake.name(),
-            'anno_pubblicazione': fake.year(),
+            'anno': fake.year(),
             'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
         }
         libri.append(libro)
@@ -58,6 +59,6 @@ def get_data():
 def post_data():
     new_libro = request.get_json()
     libri.append(new_libro)
-    return json.dumps(new_libro), 201
+    return "Aggiunto nuovo libro: " + json.dumps(new_libro), 201
 
 app.run("localhost", 11000, debug=True)
