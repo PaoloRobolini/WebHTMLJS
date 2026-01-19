@@ -6,6 +6,10 @@ function App() {
   const [data, setData] = useState([])
   const [showFormAggiunta, setFormAggiunta] = useState(false)
 
+  const resetAll = () => {
+    console.log("Reset!")
+  }
+
   useState(() => {
     const fetchData = async () => {
       try {
@@ -45,29 +49,50 @@ function App() {
   return (
     <>
 
-    {
-      (showFormAggiunta &&  <form
-      onSubmit={async (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.target)
-        const newUser = {
-          id: data.length + 1,
-          titolo: formData.get('titolo'),
-          autore: formData.get('autore'),
-          anno: formData.get('anno'),
-          genere: formData.get('genere')
-        }
-        setData([...data, newUser])
-        chiamataPost(newUser)
-      }}>
-      <input type="text" name="titolo" placeholder="Titolo" required />
-      <input type="text" name="autore" placeholder="Autore" required />
-      <input type="number" name="anno" placeholder="Anno pubblicazione" required />
-      <input type="text" name="genere" placeholder="Genere" required />
-      <button type="submit">Submit</button>
-    </form>)
-    }
-     
+      <button
+        type="button"
+        className="btn btn-primary fixed top-15 left-15 z-50"
+        onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}
+      >
+        {showFormAggiunta ? 'Chiudi form' : 'Aggiungi libro'}
+      </button>
+
+      {
+        (showFormAggiunta &&
+
+          <div className="fixed inset-0 bg-opacity-0 bg-gray-00 flex items-center justify-center z-50">
+            <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+              <div className="flex justify-end space-x-3">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    const formData = new FormData(e.target)
+                    const newUser = {
+                      id: data.length + 1,
+                      titolo: formData.get('titolo'),
+                      autore: formData.get('autore'),
+                      anno: formData.get('anno'),
+                      genere: formData.get('genere')
+                    }
+                    setData([...data, newUser])
+                    chiamataPost(newUser)
+                  }}>
+                  
+                  <input type="text" name="titolo" placeholder="Titolo" required />
+                  <input type="text" name="autore" placeholder="Autore" required />
+                  <input type="number" name="anno" placeholder="Anno pubblicazione" required />
+                  <input type="text" name="genere" placeholder="Genere" required />
+                  <button type="submit">Submit</button>
+                </form>
+                <button onClick={() => setFormAggiunta(false)} className="px-4 py-2 bg-gray-300 text-gray-800 
+              font-semibold rounded-lg hover:bg-gray-400 transition">Annulla</button>
+              </div>
+            </div>
+          </div>
+
+        )
+      }
+
 
       <div className="max-w-lg mx-auto px-4">
         {data.map((item) => (
