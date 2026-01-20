@@ -27,10 +27,11 @@ def genera_libri():
     global libri
     libri = []
     n_libri = 20
+    parole = 5
     for i in range(n_libri):
         libro = {
             'id': i + 1,
-            'titolo': fake.sentence(nb_words=4).replace('.', ''),
+            'titolo': fake.sentence(nb_words=randint(1, parole)).replace('.', ''),
             'autore': fake.name(),
             'anno': fake.year(),
             'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
