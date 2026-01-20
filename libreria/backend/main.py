@@ -39,8 +39,10 @@ def genera_libri():
         libri.append(libro)
     return json.dumps(libri), 200
 
-#@app.route('/api/data/deleteAll', methods = ['DELETE'])
-#def elimina():
+@app.route('/api/data/deleteAll', methods = ['DELETE'])
+def elimina():
+    libri = []
+    return [], 200
 
 
 @app.route('/api/data/test')

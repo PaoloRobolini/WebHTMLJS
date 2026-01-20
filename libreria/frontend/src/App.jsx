@@ -7,8 +7,23 @@ function App() {
   const [showFormAggiunta, setFormAggiunta] = useState(false)
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
 
-  const resetAll = () => {
-     console.log("resetta tutto")
+  const resetAll = async () => {
+     try {
+      const response = await fetch('http://localhost:11000/api/data/deleteAll', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if(!response.ok){
+        throw new Error('Qualcosa non funziona nell\'elimina tutto')
+      }
+      const vuota = await response.json()
+      setData(vuota)
+      console.log('Ho eliminato tutto')
+    } catch (error) {
+      console.error('Errore: ' + error)
+    }
   }
 
   const generaLibri = async () => {
