@@ -5,9 +5,10 @@ function App() {
 
   const [data, setData] = useState([])
   const [showFormAggiunta, setFormAggiunta] = useState(false)
+  const [showEliminatutto, setShowEliminaTutto] = useState(false)
 
   const resetAll = () => {
-    console.log("Reset!")
+     console.log("resetta tutto")
   }
 
   useState(() => {
@@ -48,9 +49,37 @@ function App() {
 
   return (
     <>
-      <button type="button" className="btn btn-primary fixed top-15 left-15 z-50" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+      <div className = "join join-vertical fixed top-15 left-15 z-5">
+        <button type="button" className="btn btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
         Aggiungi Un Libro
       </button>
+      <button type="button" className = "btn btn-error" onClick={
+        () => {
+          setShowEliminaTutto(true)
+        }
+      }>
+        Elimina tutto
+      </button>
+      </div>
+      
+      { /* FORM ELIMINA TUTTO */ }
+
+      {
+        showEliminatutto && <div className="fixed inset-0 bg-opacity-0 bg-gray-00 flex items-center justify-center z-50">
+            <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+              <div className="flex justify-end space-x-3">
+                <div className="join join-horizontal flex items-center justify-center">
+                    <button className="join-item btn btn-error ml-3 mx-auto" type="submit" onClick = {resetAll}>Elimina</button>
+                    <button onClick={() => {
+                      setShowEliminaTutto(false)
+                    }} className="btn btn-neutral mr-3">Annulla</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+      }
+
+      { /* FORM AGGINUTA */ }
 
       {
         (showFormAggiunta &&
@@ -74,18 +103,24 @@ function App() {
                     setFormAggiunta(false)
                     e.target.reset()
                   }}>
-                  <div className="join join-vertical"></div>
-                  <input className="join-item mb-4" type="text" name="titolo" placeholder="Titolo" required />
-                  <input className="join-item mb-4" type="text" name="autore" placeholder="Autore" required />
-                  <input className="join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required />
-                  <input className="join-item mb-4" type="text" name="genere" placeholder="Genere" required />
-                  <button className="join-item btn btn-primary" type="submit">Submit</button>
+                  <div className="join join-vertical flex justify-center"></div>
+                  
+                  <h3 className="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
+                  
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder="Titolo" required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder="Autore" required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder="Genere" required />
+
+                  <div className="join join-horizontal flex items-center justify-center">
+                    <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Submit</button>
+                    <button onClick={() => {
+                      setFormAggiunta(false)
+                      e.target.reset()
+                    }} className="btn btn-neutral mr-3">Annulla</button>
+                  </div>
                 </form>
-                <button onClick={() => {
-                  setFormAggiunta(false)
-                  e.target.reset()
-                }} className="px-4 py-2 bg-gray-300 text-gray-800 
-              font-semibold rounded-lg hover:bg-gray-400 transition">Annulla</button>
+
               </div>
             </div>
           </div>

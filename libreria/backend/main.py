@@ -39,6 +39,10 @@ def genera_libri():
         libri.append(libro)
     return "<p>Libri generati con successo!</p>", 201  
 
+#@app.route('/api/data/deleteAll', methods = ['DELETE'])
+#def elimina():
+
+
 @app.route('/api/data/test')
 def test():
     n_parole = randint(1, 5)
