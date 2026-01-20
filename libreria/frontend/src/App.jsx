@@ -48,7 +48,6 @@ function App() {
 
   return (
     <>
-
       <button type="button" className="btn btn-primary fixed top-15 left-15 z-50" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
         Aggiungi Un Libro
       </button>
