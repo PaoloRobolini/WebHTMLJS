@@ -11,6 +11,20 @@ function App() {
      console.log("resetta tutto")
   }
 
+  const generaLibri = async () => {
+    try {
+      const response = await fetch('http://localhost:11000/api/data/genera') 
+      if(!response.ok){
+        throw new Error('Qualcosa non funziona nella generazione')
+      }
+      const generati = await response.json()
+      setData(generati)
+      console.log('Ho generato i 20 libri')
+    } catch (error) {
+      console.error('Errore: ' + error)
+    }
+  }
+
   useState(() => {
     const fetchData = async () => {
       try {
@@ -53,11 +67,10 @@ function App() {
         <button type="button" className="btn btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
         Aggiungi Un Libro
       </button>
-      <button type="button" className = "btn btn-error" onClick={
-        () => {
-          setShowEliminaTutto(true)
-        }
-      }>
+      <button type="button" className = "btn btn-success mb-10" onClick={generaLibri}>
+        Genera 20 libri
+      </button>
+      <button type="button" className = "btn btn-error" onClick={() => setShowEliminaTutto(true)}>
         Elimina tutto
       </button>
       </div>

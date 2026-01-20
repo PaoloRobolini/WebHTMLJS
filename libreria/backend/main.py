@@ -37,7 +37,7 @@ def genera_libri():
             'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
         }
         libri.append(libro)
-    return "<p>Libri generati con successo!</p>", 201  
+    return json.dumps(libri), 200
 
 #@app.route('/api/data/deleteAll', methods = ['DELETE'])
 #def elimina():
