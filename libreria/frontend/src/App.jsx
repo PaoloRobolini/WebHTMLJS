@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
@@ -6,6 +6,10 @@ function App() {
   const [data, setData] = useState([])
   const [showFormAggiunta, setFormAggiunta] = useState(false)
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
+
+  const modificaLibro = (libro) => {
+    console.log(`Voglio modificare il libro {${libro.titolo}} Con ISBN: ${libro.isbn}`)
+  }
 
   const resetAll = async () => {
      try {
@@ -75,6 +79,18 @@ function App() {
       console.error('Error:', error)
     }
   }
+
+  // Gestione ESC per chiudere i form
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        if (showFormAggiunta) setFormAggiunta(false)
+        if (showEliminatutto) setShowEliminaTutto(false)
+      }
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [showFormAggiunta, showEliminatutto])
 
   return (
     <>
@@ -159,11 +175,14 @@ function App() {
 
       <div className="max-w-lg mx-auto px-4">
         {data.map((item) => (
-          <div key={item.id} className="card glass p-6 mb-4 shadow-lg text-center">
+          <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
             <h3>{item.titolo}</h3>
             <p>Autore: {item.autore}</p>
             <p>Anno: {item.anno}</p>
             <p>Genere: {item.genere}</p>
+            <p>Formato: {item.formato}</p>
+            <p>ISBN: {item.isbn}</p>
+            <button onClick={() => modificaLibro(item)} className="btn btn-warning mt-4">Modifica</button>
           </div>
         ))}
       </div>

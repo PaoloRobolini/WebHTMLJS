@@ -1,14 +1,16 @@
 from flask import Flask, request
 from faker import Faker
 from flask_cors import CORS
-import json
-from random import randint
+from faker import Faker
+from faker_books import BookProvider
 
-fake = Faker()
+
+fake = Faker('it_IT')
 
 app = Flask(__name__)
-CORS(app)
 
+# Abilita CORS solo per le API e permette le origini usate in sviluppo
+CORS(app)
 libri = []
 
 @app.route('/')
@@ -23,21 +25,23 @@ def hello_world():
 
 @app.route('/api/data/genera')
 def genera_libri():
-    fake = Faker('it_IT')
     global libri
     libri = []
     n_libri = 20
-    parole = 5
-    for i in range(n_libri):
+    for _ in range(n_libri):
+        isbn = fake.isbn13()
+        while any(libro['isbn'] == isbn for libro in libri):
+            isbn = fake.isbn13()
         libro = {
-            'id': i + 1,
-            'titolo': fake.sentence(nb_words=randint(1, parole)).replace('.', ''),
-            'autore': fake.name(),
-            'anno': fake.year(),
-            'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
-        }
+            "titolo": BookProvider(fake).book_title(),
+            "autore": fake.name(),
+            "isbn": isbn,
+            "genere": BookProvider(fake).book_genre(),
+            "anno": fake.year(),
+            "editore": fake.company()
+    }
         libri.append(libro)
-    return json.dumps(libri), 200
+    return libri, 200
 
 @app.route('/api/data/deleteAll', methods = ['DELETE'])
 def elimina():
@@ -47,20 +51,22 @@ def elimina():
 
 @app.route('/api/data/test')
 def test():
-    n_parole = randint(1, 5)
+    isbn = fake.isbn13()
+    while any(libro['isbn'] == isbn for libro in libri):
+        isbn = fake.isbn13()
     libro = {
-            'id': 1,
-            'titolo': fake.sentence(nb_words=n_parole),
-            'autore': fake.name(),
+            'isbn': isbn,
+            'titolo': fake.book.title(),
+            'autore': fake.book.author(),
             'anno': fake.year(),
-            'genere': fake.word(ext_word_list=['Romanzo', 'Giallo', 'Fantascienza', 'Storico', 'Fantasy'])    
+            'genere': fake.genre(),
+            'formato' : fake.format()
         }
-    return json.dumps(libro), 200
+    return libro, 200
 
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
-    global libri
-    return json.dumps(libri), 200
+    return libri, 200
 
 @app.route('/api/data/post', methods=['POST'])
 def post_data():
