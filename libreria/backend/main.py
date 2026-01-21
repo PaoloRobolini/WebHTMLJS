@@ -55,22 +55,22 @@ def elimina():
 
 @app.route('/api/data/delete/<isbn>', methods = ['DELETE'])
 def elimina_uno(isbn):
-    print(F"Eliminazione libro con ISBN: {isbn}")
+    # print(f"Eliminazione libro con ISBN: {isbn}")
     global libri
     libri = [libro for libro in libri if libro['isbn'] != isbn]
-    print(f"Eliminato libro con ISBN: {isbn}")
-    print(f"Libri rimanenti: {libri}")
+    # print(f"Eliminato libro con ISBN: {isbn}")
+    # print(f"Libri rimanenti: {libri}")
     return libri, 200
 
 @app.route('/api/data/patch', methods=['PATCH'])
 def patch_libri():
     aggiornato = request.get_json()
-    print(f"Aggiornamento ricevuto: {aggiornato}")
+    # print(f"Aggiornamento ricevuto: {aggiornato}")
     for libro in libri:
         if libro['isbn'] == aggiornato['isbn']:
             libro.update(aggiornato)
             break
-    return "Libri aggiornati con successo.", 200
+    return libri, 200
 
 @app.route('/api/data/generaUno')
 def genera_uno():

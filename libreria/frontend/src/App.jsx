@@ -21,7 +21,7 @@ function App() {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          body: JSON.stringify({ 'isbn' : isbn })
+          body: JSON.stringify({ 'isbn': isbn })
         }
       })
       if (!response.ok) {
@@ -100,6 +100,7 @@ function App() {
         console.error('Qualcosa non funziona nel PATCH')
       }
       const data = await response.json()
+      setData(data)
       // console.log('Success:', data)
     } catch (error) {
       console.error('Error:', error)
@@ -139,6 +140,7 @@ function App() {
   }, [showFormAggiunta, showEliminatutto, showFormModifica])
 
   return (
+
     <>
       <div className="join join-vertical fixed top-15 left-15 z-5">
         <button type="button" className="btn btn-block btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
@@ -147,9 +149,9 @@ function App() {
         <button type="button" className="btn btn-block btn-success mb-10" onClick={generaLibri}>
           Genera 20 libri
         </button>
-        <button type="button" className="btn btn-block btn-error" onClick={() => setShowEliminaTutto(true)}>
+        {data.length !== 0 && <button type="button" className="btn btn-block btn-error" onClick={() => setShowEliminaTutto(true)}>
           Elimina tutto
-        </button>
+        </button>}
       </div>
 
       { /* FORM ELIMINA TUTTO */}
@@ -161,14 +163,14 @@ function App() {
           <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
             <div className="join join-vertical flex justify-end space-x-3 space-y-10">
               <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
-              <p className="join-item">L'azione è irreversibile!</p>
+              <p className="join-item">L'azione è <strong>irreversibile!</strong></p>
               <div className="join join-horizontal flex items-center justify-center">
-                <button className="join-item btn btn-primary ml-3 mx-auto" onClick = {() =>  {
+                <button className="join-item btn btn-primary ml-3 mx-auto" onClick={() => {
                   resetAll()
                   setShowEliminaTutto(false)
-                  }
                 }
-                  >Elimina</button>
+                }
+                >Elimina</button>
                 <button onClick={() => {
                   setShowEliminaTutto(false)
                 }} className="btn btn-neutral mr-3 join-item">Annulla</button>
@@ -284,7 +286,7 @@ function App() {
 
                     <div className="join join-horizontal flex items-center justify-center">
                       <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
-                      <button onClick ={() => {
+                      <button onClick={() => {
                         eliminaLibro(libroDaModificare.isbn)
                         setShowFormModifica(false)
                       }} className="btn btn-error mx-auto"> Elimina
@@ -307,17 +309,28 @@ function App() {
       }
 
       <div className="max-w-lg mx-auto px-4 mt-40">
-        {data.map((item) => (
-          <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
-            <h3>{item.titolo}</h3>
-            <p>Autore: {item.autore}</p>
-            <p>Anno: {item.anno}</p>
-            <p>Genere: {item.genere}</p>
-            <p>Formato: {item.formato}</p>
-            <p>ISBN: {item.isbn}</p>
-            <button onClick={() => modificaLibro(item)} className="btn btn-warning mt-4">Modifica</button>
-          </div>
-        ))}
+        {data.length === 0 ? (
+          <>
+            <div className="flex join join-vertical join-justify-center mb-10">
+              <h2 className="text-center join-item font-bold text-4xl mb-50">Nessun libro presente.</h2>
+              <h2 className="text-center join-item font-bold text-xl">Creane uno o lasciali generare a Faker!</h2>
+            </div>
+
+          </>
+        ) : (
+          data.map((item) => (
+            <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
+              <h3>{item.titolo}</h3>
+              <p>Autore: {item.autore}</p>
+              <p>Anno: {item.anno}</p>
+              <p>Genere: {item.genere}</p>
+              <p>Formato: {item.formato}</p>
+              <p>ISBN: {item.isbn}</p>
+              <button onClick={() => modificaLibro(item)} className="btn btn-warning mt-4">Modifica</button>
+            </div>
+          ))
+        )
+        }
       </div>
 
     </>
