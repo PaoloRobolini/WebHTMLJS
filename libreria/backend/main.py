@@ -3,6 +3,7 @@ from faker import Faker
 from flask_cors import CORS
 from faker import Faker
 from faker_books import BookProvider
+from random import choices
 
 
 fake = Faker('it_IT')
@@ -12,6 +13,8 @@ app = Flask(__name__)
 # Abilita CORS solo per le API e permette le origini usate in sviluppo
 CORS(app)
 libri = []
+
+formati = ["Cartaceo", "Ebook", "Audiolibro"]
 
 @app.route('/')
 def home():
@@ -38,6 +41,7 @@ def genera_libri():
             "isbn": isbn,
             "genere": BookProvider(fake).book_genre(),
             "anno": fake.year(),
+            "formato": choices(formati, k=1)[0],
             "editore": fake.company()
     }
         libri.append(libro)
@@ -55,13 +59,14 @@ def test():
     while any(libro['isbn'] == isbn for libro in libri):
         isbn = fake.isbn13()
     libro = {
-            'isbn': isbn,
-            'titolo': fake.book.title(),
-            'autore': fake.book.author(),
-            'anno': fake.year(),
-            'genere': fake.genre(),
-            'formato' : fake.format()
-        }
+            "titolo": BookProvider(fake).book_title(),
+            "autore": fake.name(),
+            "isbn": isbn,
+            "genere": BookProvider(fake).book_genre(),
+            "anno": fake.year(),
+            "formato": choices(formati, k=1)[0],
+            "editore": fake.company()
+    }
     return libro, 200
 
 @app.route('/api/data/get', methods=['GET'])

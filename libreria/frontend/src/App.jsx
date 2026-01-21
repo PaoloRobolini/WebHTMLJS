@@ -8,7 +8,7 @@ function App() {
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
 
   const modificaLibro = (libro) => {
-    console.log(`Voglio modificare il libro {${libro.titolo}} Con ISBN: ${libro.isbn}`)
+    console.log(`Voglio modificare il libro {${libro.titolo}} Con ISBN: ${libro.isbn}; DUMP COMPLETO: \n`, libro)
   }
 
   const resetAll = async () => {
