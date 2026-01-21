@@ -206,8 +206,8 @@ function App() {
 
           <div className="fixed inset-0 glass flex items-center justify-center z-50">
             <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
-              <div className="flex justify-end space-x-3">
-                <form
+              <div className="flex justify-end items-center space-x-3">
+                <form className="w-full align-middle"
                   onSubmit={async (e) => {
                     // Modifica libro
                     e.preventDefault()
@@ -237,21 +237,32 @@ function App() {
                   }
                   }
                 >
-                  <div className="join join-vertical flex justify-center"></div>
+                  <div className="join join-vertical flex text-center justify-center">
+                    <h3 className="font-bold text-xl mb-4">Modifica libro</h3>
 
-                  <h3 className="font-bold text-lg mb-4">Modifica libro</h3>
+                    <label className="block text-sm font-medium mb-2">Titolo</label>
+                    <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="titolo" placeholder="Titolo" required defaultValue={libroDaModificare.titolo} />
 
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder="Titolo" required defaultValue={libroDaModificare.titolo} />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder="Autore" required defaultValue={libroDaModificare.autore} />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required defaultValue={libroDaModificare.anno} />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder="Genere" required defaultValue={libroDaModificare.genere} />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="isbn" placeholder="ISBN" required defaultValue={libroDaModificare.isbn} disabled />
-                  <div className="join join-horizontal flex items-center justify-center">
-                    <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
-                    <button onClick={() => {
-                      setShowFormModifica(false)
-                    }} className="btn btn-neutral mr-3">Annulla</button>
+                    <label className="block text-sm font-medium mb-2">Autore</label>
+                    <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="autore" placeholder="Autore" required defaultValue={libroDaModificare.autore} />
+
+                    <label className="block text-sm font-medium mb-2">Anno pubblicazione</label>
+                    <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="number" name="anno" placeholder="Anno pubblicazione" required defaultValue={libroDaModificare.anno} />
+
+                    <label className="block text-sm font-medium mb-2">Genere</label>
+                    <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="genere" placeholder="Genere" required defaultValue={libroDaModificare.genere} />
+
+                    <label className="block text-sm font-medium mb-2">ISBN</label>
+
+                    <div className="join join-horizontal flex items-center justify-center">
+                      <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
+                      <button onClick={() => {
+                        setShowFormModifica(false)
+                      }} className="btn btn-neutral mr-3">Annulla</button>
+                    </div>
                   </div>
+
+
 
                 </form>
 
@@ -262,7 +273,7 @@ function App() {
         )
       }
 
-      <div className="max-w-lg mx-auto px-4">
+      <div className="skeleton max-w-lg mx-auto px-4">
         {data.map((item) => (
           <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
             <h3>{item.titolo}</h3>
