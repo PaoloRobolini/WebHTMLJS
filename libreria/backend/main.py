@@ -49,12 +49,22 @@ def genera_libri():
 
 @app.route('/api/data/deleteAll', methods = ['DELETE'])
 def elimina():
+    global libri
     libri = []
     return [], 200
 
+@app.route('/api/data/patch', methods=['PATCH'])
+def patch_libri():
+    aggiornato = request.get_json()
+    print(f"Aggiornamento ricevuto: {aggiornato}")
+    for libro in libri:
+        if libro['isbn'] == aggiornato['isbn']:
+            libro.update(aggiornato)
+            break
+    return "Libri aggiornati con successo.", 200
 
-@app.route('/api/data/test')
-def test():
+@app.route('/api/data/generaUno')
+def genera_uno():
     isbn = fake.isbn13()
     while any(libro['isbn'] == isbn for libro in libri):
         isbn = fake.isbn13()
@@ -77,6 +87,6 @@ def get_data():
 def post_data():
     new_libro = request.get_json()
     libri.append(new_libro)
-    return "Aggiunto nuovo libro: " + json.dumps(new_libro), 201
+    return "Aggiunto nuovo libro: " + new_libro, 201
 
 app.run("localhost", 11000, debug=True)

@@ -6,9 +6,12 @@ function App() {
   const [data, setData] = useState([])
   const [showFormAggiunta, setFormAggiunta] = useState(false)
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
+  const [showFormModifica, setShowFormModifica] = useState(false)
+  const [libroDaModificare, setLibroDaModificare] = useState(null)
 
   const modificaLibro = (libro) => {
-    console.log(`Voglio modificare il libro {${libro.titolo}} Con ISBN: ${libro.isbn}; DUMP COMPLETO: \n`, libro)
+    setLibroDaModificare(libro)
+    setShowFormModifica(true)
   }
 
   const resetAll = async () => {
@@ -61,6 +64,26 @@ function App() {
     fetchData()
   }, [])
 
+  const chiamataPatch = async (book) => {
+    console.log(`Chiamata PATCH con:`, book)
+    try {
+      const response = await fetch('http://localhost:11000/api/data/patch', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(book)
+      })
+      if (!response.ok) {
+        throw new Error('Qualcosa non funziona nel PATCH')
+      }
+      const data = await response.json()
+      console.log('Success:', data)
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
   const chiamataPost = async (book) => {
     try {
       const response = await fetch('http://localhost:11000/api/data/post', {
@@ -112,19 +135,19 @@ function App() {
         showEliminatutto &&
 
         <div className="fixed inset-0 glass flex items-center justify-center z-50">
-            <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
-              <div className="join join-vertical flex justify-end space-x-3 space-y-10">
-                <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
-                <p className="join-item">L'azione è irreversibile!</p>
-                <div className="join join-horizontal flex items-center justify-center">
-                  <button className="join-item btn btn-primary ml-3 mx-auto" >Elimina</button>
-                  <button onClick={() => {
-                    setShowEliminaTutto(false)
-                  }} className="btn btn-neutral mr-3 join-item">Annulla</button>
-                </div>
+          <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+            <div className="join join-vertical flex justify-end space-x-3 space-y-10">
+              <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
+              <p className="join-item">L'azione è irreversibile!</p>
+              <div className="join join-horizontal flex items-center justify-center">
+                <button className="join-item btn btn-primary ml-3 mx-auto" >Elimina</button>
+                <button onClick={() => {
+                  setShowEliminaTutto(false)
+                }} className="btn btn-neutral mr-3 join-item">Annulla</button>
               </div>
             </div>
           </div>
+        </div>
       }
 
       {/* FORM AGGIUNTA */}
@@ -176,6 +199,68 @@ function App() {
         )
       }
 
+
+      {/* FORM MODIFICA LIBRO */}
+      {
+        (showFormModifica &&
+
+          <div className="fixed inset-0 glass flex items-center justify-center z-50">
+            <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+              <div className="flex justify-end space-x-3">
+                <form
+                  onSubmit={async (e) => {
+                    // Modifica libro
+                    e.preventDefault()
+                    const formData = new FormData(e.target)
+                    const libroModificato = {
+                      'titolo': formData.get('titolo'),
+                      'autore': formData.get('autore'),
+                      'anno': formData.get('anno'),
+                      'genere': formData.get('genere'),
+                      'formato': libroDaModificare.formato,
+                      'isbn': libroDaModificare.isbn
+                    }
+                    console.log(libroModificato)
+                    // Aggiorna l'array di libri
+                    data.map((libro) => {
+                      if (libro.isbn === libroDaModificare.isbn) {
+                        libro.titolo = libroModificato.titolo
+                        libro.autore = libroModificato.autore
+                        libro.anno = libroModificato.anno
+                        libro.genere = libroModificato.genere
+                      }
+                    })
+                    setData([...data])
+                    setShowFormModifica(false)
+                    e.target.reset()
+                    chiamataPatch(libroModificato)
+                  }
+                  }
+                >
+                  <div className="join join-vertical flex justify-center"></div>
+
+                  <h3 className="font-bold text-lg mb-4">Modifica libro</h3>
+
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder="Titolo" required defaultValue={libroDaModificare.titolo} />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder="Autore" required defaultValue={libroDaModificare.autore} />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required defaultValue={libroDaModificare.anno} />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder="Genere" required defaultValue={libroDaModificare.genere} />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="isbn" placeholder="ISBN" required defaultValue={libroDaModificare.isbn} disabled />
+                  <div className="join join-horizontal flex items-center justify-center">
+                    <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
+                    <button onClick={() => {
+                      setShowFormModifica(false)
+                    }} className="btn btn-neutral mr-3">Annulla</button>
+                  </div>
+
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+        )
+      }
 
       <div className="max-w-lg mx-auto px-4">
         {data.map((item) => (
