@@ -15,7 +15,7 @@ function App() {
   }
 
   const eliminaLibro = async (isbn) => {
-    console.log(`Elimino il libro: ${JSON.stringify(isbn)}`)
+    // console.log(`Elimino il libro: ${JSON.stringify(isbn)}`)
     try {
       const response = await fetch(`http://localhost:11000/api/data/delete/${isbn}`, {
         method: 'DELETE',
@@ -25,11 +25,11 @@ function App() {
         }
       })
       if (!response.ok) {
-        throw new Error('Qualcosa non funziona nell\'elimina libro')
+        console.error('Qualcosa non funziona nell\'elimina libro')
       }
       const aggiornati = await response.json()
       setData(aggiornati)
-      console.log(`Ho eliminato il libro con ISBN: ${isbn}`)
+      // console.log(`Ho eliminato il libro con ISBN: ${isbn}`)
     }
     catch (error) {
       console.error('Errore: ' + error)
@@ -45,11 +45,11 @@ function App() {
         }
       })
       if (!response.ok) {
-        throw new Error('Qualcosa non funziona nell\'elimina tutto')
+        console.error('Qualcosa non funziona nell\'elimina tutto')
       }
       const vuota = await response.json()
       setData(vuota)
-      console.log('Ho eliminato tutto')
+      // console.log('Ho eliminato tutto')
     } catch (error) {
       console.error('Errore: ' + error)
     }
@@ -59,11 +59,11 @@ function App() {
     try {
       const response = await fetch('http://localhost:11000/api/data/genera')
       if (!response.ok) {
-        throw new Error('Qualcosa non funziona nella generazione')
+        console.error('Qualcosa non funziona nella generazione')
       }
       const generati = await response.json()
       setData(generati)
-      console.log('Ho generato i 20 libri')
+      // console.log('Ho generato i 20 libri')
     } catch (error) {
       console.error('Errore: ' + error)
     }
@@ -74,11 +74,11 @@ function App() {
       try {
         const response = await fetch('http://localhost:11000/api/data/get')
         if (!response.ok) {
-          throw new Error('Qualcosa non funziona nella GET')
+          console.error('Qualcosa non funziona nella GET')
         }
         const jsonData = await response.json()
         setData(jsonData)
-        console.log('Dati fetchati:', jsonData)
+        // console.log('Dati fetchati:', jsonData)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -87,7 +87,7 @@ function App() {
   }, [])
 
   const chiamataPatch = async (book) => {
-    console.log(`Chiamata PATCH con:`, book)
+    // console.log(`Chiamata PATCH con:`, book)
     try {
       const response = await fetch('http://localhost:11000/api/data/patch', {
         method: 'PATCH',
@@ -97,10 +97,10 @@ function App() {
         body: JSON.stringify(book)
       })
       if (!response.ok) {
-        throw new Error('Qualcosa non funziona nel PATCH')
+        console.error('Qualcosa non funziona nel PATCH')
       }
       const data = await response.json()
-      console.log('Success:', data)
+      // console.log('Success:', data)
     } catch (error) {
       console.error('Error:', error)
     }
@@ -116,10 +116,10 @@ function App() {
         body: JSON.stringify(book)
       })
       if (!response.ok) {
-        throw new Error('Qualcosa non funziona nel POST')
+        console.error('Qualcosa non funziona nel POST')
       }
       const data = await response.json()
-      console.log('Success:', data)
+      // console.log('Success:', data)
     } catch (error) {
       console.error('Error:', error)
     }
@@ -131,22 +131,23 @@ function App() {
       if (event.key === 'Escape') {
         if (showFormAggiunta) setFormAggiunta(false)
         if (showEliminatutto) setShowEliminaTutto(false)
+        if (showFormModifica) setShowFormModifica(false)
       }
     }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
-  }, [showFormAggiunta, showEliminatutto])
+  }, [showFormAggiunta, showEliminatutto, showFormModifica])
 
   return (
     <>
       <div className="join join-vertical fixed top-15 left-15 z-5">
-        <button type="button" className="btn btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+        <button type="button" className="btn btn-block btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
           Aggiungi Un Libro
         </button>
-        <button type="button" className="btn btn-success mb-10" onClick={generaLibri}>
+        <button type="button" className="btn btn-block btn-success mb-10" onClick={generaLibri}>
           Genera 20 libri
         </button>
-        <button type="button" className="btn btn-error" onClick={() => setShowEliminaTutto(true)}>
+        <button type="button" className="btn btn-block btn-error" onClick={() => setShowEliminaTutto(true)}>
           Elimina tutto
         </button>
       </div>
@@ -212,7 +213,7 @@ function App() {
 
                   <div className="join join-horizontal flex items-center justify-center">
                     <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Aggiungi</button>
-                    <button onClick={() => {
+                    <button onClick={(e) => {
                       setFormAggiunta(false)
                       e.target.reset()
                     }} className="btn btn-neutral mr-3">Annulla</button>
@@ -247,7 +248,7 @@ function App() {
                       'formato': libroDaModificare.formato,
                       'isbn': libroDaModificare.isbn
                     }
-                    console.log(libroModificato)
+                    // console.log(libroModificato)
                     // Aggiorna l'array di libri
                     data.map((libro) => {
                       if (libro.isbn === libroDaModificare.isbn) {
@@ -305,7 +306,7 @@ function App() {
         )
       }
 
-      <div className="max-w-lg mx-auto px-4">
+      <div className="max-w-lg mx-auto px-4 mt-40">
         {data.map((item) => (
           <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
             <h3>{item.titolo}</h3>
