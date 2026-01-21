@@ -55,6 +55,7 @@ def elimina():
 
 @app.route('/api/data/delete/<isbn>', methods = ['DELETE'])
 def elimina_uno(isbn):
+    print(F"Eliminazione libro con ISBN: {isbn}")
     global libri
     libri = [libro for libro in libri if libro['isbn'] != isbn]
     print(f"Eliminato libro con ISBN: {isbn}")

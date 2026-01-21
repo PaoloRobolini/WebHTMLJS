@@ -14,13 +14,14 @@ function App() {
     setShowFormModifica(true)
   }
 
-  const eliminaLibro = async (libro) => {
+  const eliminaLibro = async (isbn) => {
+    console.log(`Elimino il libro: ${JSON.stringify(isbn)}`)
     try {
-      const response = await fetch(`http://localhost:11000/api/data/deleteUno`, {
+      const response = await fetch(`http://localhost:11000/api/data/delete/${isbn}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          body: JSON.stringify({ 'isbn': libro.isbn })
+          body: JSON.stringify({ 'isbn' : isbn })
         }
       })
       if (!response.ok) {
@@ -283,7 +284,7 @@ function App() {
                     <div className="join join-horizontal flex items-center justify-center">
                       <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
                       <button onClick ={() => {
-                        eliminaLibro(libroDaModificare)
+                        eliminaLibro(libroDaModificare.isbn)
                         setShowFormModifica(false)
                       }} className="btn btn-error mx-auto"> Elimina
                       </button>
