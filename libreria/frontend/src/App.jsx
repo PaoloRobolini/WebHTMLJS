@@ -268,7 +268,7 @@ function App() {
                   }
                 >
                   <div className="join join-vertical flex text-center justify-center">
-                    <h3 className="font-bold text-xl mb-4">Modifica libro</h3>
+                    <h3 className="font-bold text-4xl mb-4">Modifica libro</h3>
 
                     <label className="block text-sm font-medium mb-2">Titolo</label>
                     <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="titolo" placeholder="Titolo" required defaultValue={libroDaModificare.titolo} />
@@ -281,8 +281,6 @@ function App() {
 
                     <label className="block text-sm font-medium mb-2">Genere</label>
                     <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="genere" placeholder="Genere" required defaultValue={libroDaModificare.genere} />
-
-                    <label className="block text-sm font-medium mb-2">ISBN</label>
 
                     <div className="join join-horizontal flex items-center justify-center">
                       <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
@@ -322,7 +320,7 @@ function App() {
             <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
               <h3>{item.titolo}</h3>
               <p>Autore: {item.autore}</p>
-              <p>Anno: {item.anno}</p>
+              <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
               <p>Genere: {item.genere}</p>
               <p>Formato: {item.formato}</p>
               <p>ISBN: {item.isbn}</p>
