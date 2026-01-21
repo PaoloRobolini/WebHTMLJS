@@ -12,14 +12,14 @@ function App() {
   }
 
   const resetAll = async () => {
-     try {
+    try {
       const response = await fetch('http://localhost:11000/api/data/deleteAll', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error('Qualcosa non funziona nell\'elimina tutto')
       }
       const vuota = await response.json()
@@ -32,8 +32,8 @@ function App() {
 
   const generaLibri = async () => {
     try {
-      const response = await fetch('http://localhost:11000/api/data/genera') 
-      if(!response.ok){
+      const response = await fetch('http://localhost:11000/api/data/genera')
+      if (!response.ok) {
         throw new Error('Qualcosa non funziona nella generazione')
       }
       const generati = await response.json()
@@ -94,41 +94,45 @@ function App() {
 
   return (
     <>
-      <div className = "join join-vertical fixed top-15 left-15 z-5">
+      <div className="join join-vertical fixed top-15 left-15 z-5">
         <button type="button" className="btn btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
-        Aggiungi Un Libro
-      </button>
-      <button type="button" className = "btn btn-success mb-10" onClick={generaLibri}>
-        Genera 20 libri
-      </button>
-      <button type="button" className = "btn btn-error" onClick={() => setShowEliminaTutto(true)}>
-        Elimina tutto
-      </button>
+          Aggiungi Un Libro
+        </button>
+        <button type="button" className="btn btn-success mb-10" onClick={generaLibri}>
+          Genera 20 libri
+        </button>
+        <button type="button" className="btn btn-error" onClick={() => setShowEliminaTutto(true)}>
+          Elimina tutto
+        </button>
       </div>
-      
-      { /* FORM ELIMINA TUTTO */ }
+
+      { /* FORM ELIMINA TUTTO */}
 
       {
-        showEliminatutto && <div className="fixed inset-0 bg-opacity-0 bg-gray-00 flex items-center justify-center z-50">
+        showEliminatutto &&
+
+        <div className="fixed inset-0 glass flex items-center justify-center z-50">
             <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
-              <div className="flex justify-end space-x-3">
+              <div className="join join-vertical flex justify-end space-x-3 space-y-10">
+                <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
+                <p className="join-item">L'azione è irreversibile!</p>
                 <div className="join join-horizontal flex items-center justify-center">
-                    <button className="join-item btn btn-error ml-3 mx-auto" type="submit" onClick = {resetAll}>Elimina</button>
-                    <button onClick={() => {
-                      setShowEliminaTutto(false)
-                    }} className="btn btn-neutral mr-3">Annulla</button>
-                  </div>
+                  <button className="join-item btn btn-primary ml-3 mx-auto" >Elimina</button>
+                  <button onClick={() => {
+                    setShowEliminaTutto(false)
+                  }} className="btn btn-neutral mr-3 join-item">Annulla</button>
+                </div>
               </div>
             </div>
           </div>
       }
 
-      { /* FORM AGGINUTA */ }
+      {/* FORM AGGIUNTA */}
 
       {
         (showFormAggiunta &&
 
-          <div className="fixed inset-0 bg-opacity-0 bg-gray-00 flex items-center justify-center z-50">
+          <div className="fixed inset-0 glass flex items-center justify-center z-50">
             <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
               <div className="flex justify-end space-x-3">
                 <form
@@ -148,16 +152,16 @@ function App() {
                     e.target.reset()
                   }}>
                   <div className="join join-vertical flex justify-center"></div>
-                  
+
                   <h3 className="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
-                  
+
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder="Titolo" required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder="Autore" required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder="Genere" required />
 
                   <div className="join join-horizontal flex items-center justify-center">
-                    <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Submit</button>
+                    <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Aggiungi</button>
                     <button onClick={() => {
                       setFormAggiunta(false)
                       e.target.reset()
