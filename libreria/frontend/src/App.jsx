@@ -14,12 +14,33 @@ function App() {
     setShowFormModifica(true)
   }
 
+  const eliminaLibro = async (libro) => {
+    try {
+      const response = await fetch(`http://localhost:11000/api/data/deleteUno`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          body: JSON.stringify({ 'isbn': libro.isbn })
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Qualcosa non funziona nell\'elimina libro')
+      }
+      const aggiornati = await response.json()
+      setData(aggiornati)
+      console.log(`Ho eliminato il libro con ISBN: ${isbn}`)
+    }
+    catch (error) {
+      console.error('Errore: ' + error)
+    }
+  }
+
   const resetAll = async () => {
     try {
       const response = await fetch('http://localhost:11000/api/data/deleteAll', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         }
       })
       if (!response.ok) {
@@ -140,7 +161,12 @@ function App() {
               <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
               <p className="join-item">L'azione è irreversibile!</p>
               <div className="join join-horizontal flex items-center justify-center">
-                <button className="join-item btn btn-primary ml-3 mx-auto" >Elimina</button>
+                <button className="join-item btn btn-primary ml-3 mx-auto" onClick = {() =>  {
+                  resetAll()
+                  setShowEliminaTutto(false)
+                  }
+                }
+                  >Elimina</button>
                 <button onClick={() => {
                   setShowEliminaTutto(false)
                 }} className="btn btn-neutral mr-3 join-item">Annulla</button>
@@ -256,9 +282,14 @@ function App() {
 
                     <div className="join join-horizontal flex items-center justify-center">
                       <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
+                      <button onClick ={() => {
+                        eliminaLibro(libroDaModificare)
+                        setShowFormModifica(false)
+                      }} className="btn btn-error mx-auto"> Elimina
+                      </button>
                       <button onClick={() => {
                         setShowFormModifica(false)
-                      }} className="btn btn-neutral mr-3">Annulla</button>
+                      }} className="btn btn-neutral mr-3 mx-auto">Annulla</button>
                     </div>
                   </div>
 
@@ -273,7 +304,7 @@ function App() {
         )
       }
 
-      <div className="skeleton max-w-lg mx-auto px-4">
+      <div className="max-w-lg mx-auto px-4">
         {data.map((item) => (
           <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
             <h3>{item.titolo}</h3>

@@ -53,6 +53,14 @@ def elimina():
     libri = []
     return [], 200
 
+@app.route('/api/data/delete/<isbn>', methods = ['DELETE'])
+def elimina_uno(isbn):
+    global libri
+    libri = [libro for libro in libri if libro['isbn'] != isbn]
+    print(f"Eliminato libro con ISBN: {isbn}")
+    print(f"Libri rimanenti: {libri}")
+    return libri, 200
+
 @app.route('/api/data/patch', methods=['PATCH'])
 def patch_libri():
     aggiornato = request.get_json()
