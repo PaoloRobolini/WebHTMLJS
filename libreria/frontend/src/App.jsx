@@ -376,7 +376,7 @@ function App() {
         )
       }
 
-      <div className="max-w-lg mx-auto px-4 mt-40">
+      <div className="max-w mx-auto px-4 mt-40 ml-60 mr-60">
         {data.length === 0 ? (
           <>
             <div className="flex join join-vertical join-justify-center mb-10">
@@ -386,37 +386,29 @@ function App() {
 
           </>
         ) : (
-          // <table>
-          //   <thead>
-          //     <tr>
-          //       <th></th>
-          //       <th></th>
-          //       <th></th>
-          //     </tr>
-          //   </thead>
-          // </table>
-          data.map((item) => (
-            <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
-              <h3>{item.titolo}</h3>
-              <p>Autore: {item.autore}</p>
-              <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
-              <p>Genere: {item.genere}</p>
-              <p>Formato: {item.formato}</p>
-              <p>{item.isbn}</p>
-              <div className="join join-horizontal flex align-left space-x-3 mt-4">
-                {/* Info libro */}
-                <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
-                  <img src = " assets/info.svg" alt="Info Libro" width="30" height="30" />
-                </button>
-                {/* Modifica libro */}
-                <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
-                  <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
-                </button>
-              </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-15">
+            {data.map((item) => (
+                <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
+                  <h3>{item.titolo}</h3>
+                  <p>Autore: {item.autore}</p>
+                  <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
+                  <p>Genere: {item.genere}</p>
+                  <p>Formato: {item.formato}</p>
+                  <p>{item.isbn}</p>
+                  <div className="join join-horizontal flex align-left space-x-3 mt-4">
+                    {/* Info libro */}
+                    <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
+                      <img src=" assets/info.svg" alt="Info Libro" width="30" height="30" />
+                    </button>
+                    {/* Modifica libro */}
+                    <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
+                      <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
+                    </button>
+                  </div>
 
-            </div>
-          ))
-        )
+                </div>
+              ))}
+          </div>)
         }
       </div>
 
