@@ -386,6 +386,15 @@ function App() {
 
           </>
         ) : (
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+          </table>
           data.map((item) => (
             <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
               <h3>{item.titolo}</h3>
