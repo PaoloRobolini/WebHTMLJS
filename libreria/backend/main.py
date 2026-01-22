@@ -15,6 +15,23 @@ CORS(app)
 libri = []
 
 formati = ["Cartaceo", "Ebook", "Audiolibro"]
+generi = ["Fantasy", "Romanzo Storico", "Giallo", "Thriller", "Fantascienza", "Horror", "Narrativa Contemporanea", "Biografia", "Autobiografia", "Saggio"]
+
+
+def genera_libro():
+    isbn = fake.isbn13()
+    while any(libro['isbn'] == isbn for libro in libri):
+        isbn = fake.isbn13()
+    libro = {
+            "titolo": BookProvider(fake).book_title(),
+            "autore": fake.name(),
+            "isbn": isbn,
+            "genere": choices(generi, k=1)[0],
+            "anno": fake.year(),
+            "formato": choices(formati, k=1)[0],
+            "editore": fake.company()
+    }
+    return libro
 
 @app.route('/')
 def home():
@@ -25,6 +42,13 @@ def hello_world():
     variabile = "<p>Hello, World!</p>"
     return variabile
 
+@app.route('/api/data/get/generi', methods=['GET'])
+def get_generi():
+    return generi, 200
+
+@app.route('/api/data/get/formati', methods=['GET'])
+def get_formati():
+    return formati, 200
 
 @app.route('/api/data/genera')
 def genera_libri():
@@ -32,18 +56,8 @@ def genera_libri():
     libri = []
     n_libri = 20
     for _ in range(n_libri):
-        isbn = fake.isbn13()
-        while any(libro['isbn'] == isbn for libro in libri):
-            isbn = fake.isbn13()
-        libro = {
-            "titolo": BookProvider(fake).book_title(),
-            "autore": fake.name(),
-            "isbn": isbn,
-            "genere": BookProvider(fake).book_genre(),
-            "anno": fake.year(),
-            "formato": choices(formati, k=1)[0],
-            "editore": fake.company()
-    }
+        libro = genera_libro()
+        # print(f"Generato libro: {libro}")
         libri.append(libro)
     return libri, 200
 
@@ -70,32 +84,26 @@ def patch_libri():
         if libro['isbn'] == aggiornato['isbn']:
             libro.update(aggiornato)
             break
-    return libri, 200
+    return aggiornato, 200
 
-@app.route('/api/data/generaUno')
-def genera_uno():
-    isbn = fake.isbn13()
-    while any(libro['isbn'] == isbn for libro in libri):
-        isbn = fake.isbn13()
-    libro = {
-            "titolo": BookProvider(fake).book_title(),
-            "autore": fake.name(),
-            "isbn": isbn,
-            "genere": BookProvider(fake).book_genre(),
-            "anno": fake.year(),
-            "formato": choices(formati, k=1)[0],
-            "editore": fake.company()
-    }
-    return libro, 200
+@app.route('/api/data/generaEsempio', methods=['GET'])
+def genera_esempio():
+    esempio = genera_libro()
+    return esempio, 200
 
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
     return libri, 200
 
+
 @app.route('/api/data/post', methods=['POST'])
 def post_data():
-    new_libro = request.get_json()
-    libri.append(new_libro)
-    return "Aggiunto nuovo libro: " + new_libro, 201
+    nuovo_libro = request.get_json()
+    # print(f"Ricevuto nuovo libro: {nuovo_libro}")
+    temp = genera_libro()
+    for keys, values in nuovo_libro.items():
+        temp[keys] = values
+    libri.append(temp)
+    return temp, 201
 
 app.run("localhost", 11000, debug=True)

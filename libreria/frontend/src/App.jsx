@@ -9,6 +9,8 @@ function App() {
   const [showFormModifica, setShowFormModifica] = useState(false)
   const [libroDaModificare, setLibroDaModificare] = useState(null)
 
+  const [libroEsempio, setLibroEsempio] = useState(null)
+
   const modificaLibro = (libro) => {
     setLibroDaModificare(libro)
     setShowFormModifica(true)
@@ -55,6 +57,7 @@ function App() {
     }
   }
 
+  // Genera 20 libri con Faker
   const generaLibri = async () => {
     try {
       const response = await fetch('http://localhost:11000/api/data/genera')
@@ -69,7 +72,9 @@ function App() {
     }
   }
 
-  useState(() => {
+  useEffect(() => {
+    
+    //Prende i libri dal backend
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:11000/api/data/get')
@@ -84,8 +89,57 @@ function App() {
       }
     }
     fetchData()
+
+    //Prende il libro di esempio per il form
+    const fetchLibroEsempio = async () => {
+      try {
+        const response = await fetch('http://localhost:11000/api/data/generaEsempio')
+        if (!response.ok) {
+          console.error('Qualcosa non funziona nella GET del libro di esempio')
+        }
+        const esempio = await response.json()
+        setLibroEsempio(esempio)
+        console.log(`Libro esempio fetchato: ${JSON.stringify(esempio)}`)
+      } catch (error) {
+        console.error('Error fetching libro esempio:', error)
+      }
+    }
+    fetchLibroEsempio()
+
+    //Estrapola i generi dei libri
+    const getGeneri = async () => {
+      try {
+        const response = await fetch('http://localhost:11000/api/data/get/generi')
+        if (!response.ok) {
+          console.error('Qualcosa non funziona nella GET dei generi')
+        } 
+        const generi = await response.json()
+        // console.log(`Generi disponibili: ${JSON.stringify(generi)}`)
+      } catch (error) {
+        console.error('Error fetching generi:', error)
+      }
+    }
+    getGeneri()
+
+    //Estrapola i formati dei libri
+    const getFormati = async () => {
+      try {
+        const response = await fetch('http://localhost:11000/api/data/get/formati')
+        if (!response.ok) {
+          console.error('Qualcosa non funziona nella GET dei formati')
+        } 
+        const formati = await response.json()
+        // console.log(`Formati disponibili: ${JSON.stringify(formati)}`)
+      } catch (error) {
+        console.error('Error fetching formati:', error)
+      }
+    }
+    getFormati()
+
   }, [])
 
+
+  //Modifica libro con PATCH e lo aggiunge al vettore
   const chiamataPatch = async (book) => {
     // console.log(`Chiamata PATCH con:`, book)
     try {
@@ -99,14 +153,19 @@ function App() {
       if (!response.ok) {
         console.error('Qualcosa non funziona nel PATCH')
       }
-      const data = await response.json()
-      setData(data)
+      const updatedBook = await response.json()
+      setData((prevData) =>
+        prevData.map((item) =>
+          item.isbn === updatedBook.isbn ? updatedBook : item
+        )
+      )
       // console.log('Success:', data)
     } catch (error) {
       console.error('Error:', error)
     }
   }
 
+  //Creazione nuovo libro con POST
   const chiamataPost = async (book) => {
     try {
       const response = await fetch('http://localhost:11000/api/data/post', {
@@ -119,7 +178,8 @@ function App() {
       if (!response.ok) {
         console.error('Qualcosa non funziona nel POST')
       }
-      const data = await response.json()
+      const nuovoLibro = await response.json()
+      setData((prevData) => [nuovoLibro, ...prevData])
       // console.log('Success:', data)
     } catch (error) {
       console.error('Error:', error)
@@ -199,7 +259,6 @@ function App() {
                       anno: formData.get('anno'),
                       genere: formData.get('genere')
                     }
-                    setData([...data, newUser])
                     chiamataPost(newUser)
                     setFormAggiunta(false)
                     e.target.reset()
@@ -208,10 +267,10 @@ function App() {
 
                   <h3 className="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
 
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder="Titolo" required />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder="Autore" required />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder="Anno pubblicazione" required />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder="Genere" required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder={libroEsempio.titolo}required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder={libroEsempio.autore} required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder={libroEsempio.anno} required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder={libroEsempio.genere} required />
 
                   <div className="join join-horizontal flex items-center justify-center">
                     <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Aggiungi</button>
