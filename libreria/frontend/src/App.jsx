@@ -387,16 +387,16 @@ function App() {
           </>
         ) : (
           data.map((item) => (
-            <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center">
+            <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
               <h3>{item.titolo}</h3>
               <p>Autore: {item.autore}</p>
               <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
               <p>Genere: {item.genere}</p>
               <p>Formato: {item.formato}</p>
               <p>{item.isbn}</p>
-              <div className="join join-horizontal flex items-center justify-center space-x-3 mb-4">
+              <div className="join join-horizontal flex align-left space-x-3 mt-4">
                 {/* Info libro */}
-                <button onClick={() => modificaLibro(item)} className="btn btn-neutral btn-circle">
+                <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
                   <img src = "public/assets/info.svg" alt="Info Libro" width="30" height="30" />
                 </button>
                 {/* Modifica libro */}
