@@ -16,6 +16,11 @@ function App() {
     setShowFormModifica(true)
   }
 
+  const modificaLibroInfo = (libro) => {
+    setLibroDaModificare(libro)
+  }
+
+
   const eliminaLibro = async (isbn) => {
     // console.log(`Elimino il libro: ${JSON.stringify(isbn)}`)
     try {
@@ -73,7 +78,7 @@ function App() {
   }
 
   useEffect(() => {
-    
+
     //Prende i libri dal backend
     const fetchData = async () => {
       try {
@@ -99,7 +104,7 @@ function App() {
         }
         const esempio = await response.json()
         setLibroEsempio(esempio)
-        console.log(`Libro esempio fetchato: ${JSON.stringify(esempio)}`)
+        // console.log(`Libro esempio fetchato: ${JSON.stringify(esempio)}`)
       } catch (error) {
         console.error('Error fetching libro esempio:', error)
       }
@@ -112,7 +117,7 @@ function App() {
         const response = await fetch('http://localhost:11000/api/data/get/generi')
         if (!response.ok) {
           console.error('Qualcosa non funziona nella GET dei generi')
-        } 
+        }
         const generi = await response.json()
         // console.log(`Generi disponibili: ${JSON.stringify(generi)}`)
       } catch (error) {
@@ -127,7 +132,7 @@ function App() {
         const response = await fetch('http://localhost:11000/api/data/get/formati')
         if (!response.ok) {
           console.error('Qualcosa non funziona nella GET dei formati')
-        } 
+        }
         const formati = await response.json()
         // console.log(`Formati disponibili: ${JSON.stringify(formati)}`)
       } catch (error) {
@@ -203,15 +208,22 @@ function App() {
 
     <>
       <div className="join join-vertical fixed top-15 left-15 z-5">
-        <button type="button" className="btn btn-block btn-primary 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
-          Aggiungi Un Libro
+        {/* Tasto aggiungi */}
+        <button type="button" className="btn btn-circle btn-ghost 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+          <img src="public/assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
         </button>
-        <button type="button" className="btn btn-block btn-success mb-10" onClick={generaLibri}>
-          Genera 20 libri
+
+        {/* Tasto genera libri */}
+        <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition mb-10" onClick={generaLibri}>
+          <img src="public/assets/random.svg" alt="Genera Libri" width="64" height="64" />
         </button>
-        {data.length !== 0 && <button type="button" className="btn btn-block btn-error" onClick={() => setShowEliminaTutto(true)}>
-          Elimina tutto
-        </button>}
+
+        {
+          // Tasto elimina 
+          data.length !== 0 &&
+          <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
+            <img src="public/assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
+          </button>}
       </div>
 
       { /* FORM ELIMINA TUTTO */}
@@ -267,16 +279,15 @@ function App() {
 
                   <h3 className="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
 
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder={libroEsempio.titolo}required />
+                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder={libroEsempio.titolo} required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder={libroEsempio.autore} required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder={libroEsempio.anno} required />
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder={libroEsempio.genere} required />
 
                   <div className="join join-horizontal flex items-center justify-center">
                     <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Aggiungi</button>
-                    <button onClick={(e) => {
+                    <button onClick={() => {
                       setFormAggiunta(false)
-                      e.target.reset()
                     }} className="btn btn-neutral mr-3">Annulla</button>
                   </div>
                 </form>
@@ -382,8 +393,18 @@ function App() {
               <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
               <p>Genere: {item.genere}</p>
               <p>Formato: {item.formato}</p>
-              <p>ISBN: {item.isbn}</p>
-              <button onClick={() => modificaLibro(item)} className="btn btn-warning mt-4">Modifica</button>
+              <p>{item.isbn}</p>
+              <div className="join join-horizontal flex items-center justify-center space-x-3 mb-4">
+                {/* Info libro */}
+                <button onClick={() => modificaLibro(item)} className="btn btn-neutral btn-circle">
+                  <img src = "public/assets/info.svg" alt="Info Libro" width="30" height="30" />
+                </button>
+                {/* Modifica libro */}
+                <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
+                  <img src="public/assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
+                </button>
+              </div>
+
             </div>
           ))
         )

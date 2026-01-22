@@ -3,3 +3,8 @@
   themes: dark --default, light
 };
 
+/* Aggiungi un'animazione di rotazione al passaggio del mouse sui bottoni circolari */
+button:hover img {
+  transform: rotate(5deg);
+  transition: transform .2s ease;
+}
