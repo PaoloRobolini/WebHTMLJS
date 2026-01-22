@@ -210,19 +210,19 @@ function App() {
       <div className="join join-vertical fixed top-15 left-15 z-5">
         {/* Tasto aggiungi */}
         <button type="button" className="btn btn-circle btn-ghost 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
-          <img src="public/assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
+          <img src=" assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
         </button>
 
         {/* Tasto genera libri */}
         <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition mb-10" onClick={generaLibri}>
-          <img src="public/assets/random.svg" alt="Genera Libri" width="64" height="64" />
+          <img src=" assets/random.svg" alt="Genera Libri" width="64" height="64" />
         </button>
 
         {
           // Tasto elimina 
           data.length !== 0 &&
           <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
-            <img src="public/assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
+            <img src=" assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
           </button>}
       </div>
 
@@ -237,7 +237,7 @@ function App() {
               <h1 className="join-item font-bold text-lg mb-4">Sei sicuro di voler eliminare tutti i libri?</h1>
               <p className="join-item">L'azione è <strong>irreversibile!</strong></p>
               <div className="join join-horizontal flex items-center justify-center">
-                <button className="join-item btn btn-primary ml-3 mx-auto" onClick={() => {
+                <button className="join-item btn btn-error ml-3 mx-auto" onClick={() => {
                   resetAll()
                   setShowEliminaTutto(false)
                 }
@@ -386,15 +386,15 @@ function App() {
 
           </>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-          </table>
+          // <table>
+          //   <thead>
+          //     <tr>
+          //       <th></th>
+          //       <th></th>
+          //       <th></th>
+          //     </tr>
+          //   </thead>
+          // </table>
           data.map((item) => (
             <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
               <h3>{item.titolo}</h3>
@@ -406,11 +406,11 @@ function App() {
               <div className="join join-horizontal flex align-left space-x-3 mt-4">
                 {/* Info libro */}
                 <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
-                  <img src = "public/assets/info.svg" alt="Info Libro" width="30" height="30" />
+                  <img src = " assets/info.svg" alt="Info Libro" width="30" height="30" />
                 </button>
                 {/* Modifica libro */}
                 <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
-                  <img src="public/assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
+                  <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
                 </button>
               </div>
 
