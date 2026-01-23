@@ -52,9 +52,7 @@ def get_formati():
 
 @app.route('/api/data/genera')
 def genera_libri():
-    global libri
-    libri = []
-    n_libri = 20
+    n_libri = 5
     for _ in range(n_libri):
         libro = genera_libro()
         # print(f"Generato libro: {libro}")
@@ -63,8 +61,7 @@ def genera_libri():
 
 @app.route('/api/data/deleteAll', methods = ['DELETE'])
 def elimina():
-    global libri
-    libri = []
+    libri.clear()
     return [], 200
 
 @app.route('/api/data/delete/<isbn>', methods = ['DELETE'])
@@ -91,8 +88,13 @@ def genera_esempio():
     esempio = genera_libro()
     return esempio, 200
 
+
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
+    libri = []
+    for _ in range(20):
+        libro = genera_libro()
+        libri.append(libro)
     return libri, 200
 
 
