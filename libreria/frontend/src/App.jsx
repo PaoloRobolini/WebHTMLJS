@@ -4,6 +4,7 @@ import './App.css'
 function App() {
 
   const [data, setData] = useState([])
+  const [filteredData, setFilteredData] = useState([])
   const [showFormAggiunta, setFormAggiunta] = useState(false)
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
   const [showFormModifica, setShowFormModifica] = useState(false)
@@ -15,6 +16,7 @@ function App() {
     setLibroDaModificare(libro)
     setShowFormModifica(true)
   }
+
 
   const modificaLibroInfo = (libro) => {
     setLibroDaModificare(libro)
@@ -77,8 +79,26 @@ function App() {
     }
   }
 
-  useEffect(() => {
 
+  //Filtra i dati in base alla query
+  const [query, setQuery] = useState('')
+
+  const filterData = (query) => {
+    console.log(`Filtrando per query: ${query}`)
+    const filtered = data.filter(libro =>
+      libro.titolo.toLowerCase().includes(query.toLowerCase()) ||
+      libro.autore.toLowerCase().includes(query.toLowerCase())
+    )
+    setFilteredData(filtered)
+  }
+
+  useEffect(() => {
+    filterData(query)
+  }, [data, query])
+
+
+  //Fetch iniziale dei dati
+  useEffect(() => {
     //Prende i libri dal backend
     const fetchData = async () => {
       try {
@@ -205,25 +225,51 @@ function App() {
   }, [showFormAggiunta, showEliminatutto, showFormModifica])
 
   return (
-
     <>
-      <div className="join join-vertical fixed top-15 left-15 z-5">
-        {/* Tasto aggiungi */}
-        <button type="button" className="btn btn-circle btn-ghost 0 mb-10" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
-          <img src=" assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
-        </button>
 
-        {/* Tasto genera libri */}
-        <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition mb-10" onClick={generaLibri}>
-          <img src=" assets/random.svg" alt="Genera Libri" width="64" height="64" />
-        </button>
+      <div className="mt-15">
+        <header className="bg-gray-900 text-white py-6 shadow-lg fixed w-full top-15 z-10 rounded-xl">
+          <div className="container mx-auto px-4">
+            <h1 className="text-3xl font-bold text-center">Libreria di Faker</h1>
+          </div>
+          {/* Navbar */}
+          <div className="bg-gray-800 mx-10 py-5 mt-10 rounded-xl shadow-lg">
+            {/* Bottoni */}
+            <div className="join join-horizontal z-5 flex margin-auto mx-15 space-x-10 space-y-auto">
+              {/* Tasto aggiungi */}
+              <button type="button" className="btn btn-circle btn-ghost 0" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+                <img src=" assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
+              </button>
 
-        {
-          // Tasto elimina 
-          data.length !== 0 &&
-          <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
-            <img src=" assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
-          </button>}
+              {/* Tasto genera libri */}
+              <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition" onClick={generaLibri}>
+                <img src=" assets/random.svg" alt="Genera Libri" width="64" height="64" />
+              </button>
+
+              {
+                // Tasto elimina 
+                data.length !== 0 &&
+                <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
+                  <img src=" assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
+                </button>}
+            </div>
+
+            {/* Barra di ricerca */}
+            <div className="join-item flex justify-center my-auto">
+              <input
+                type="text"
+                placeholder="Cerca un libro..."
+                className="input input-bordered w-full max-w-xs"
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  filterData(e.target.value)
+                }}
+              />
+            </div>
+          </div>
+
+        </header>
+
       </div>
 
       { /* FORM ELIMINA TUTTO */}
@@ -376,39 +422,46 @@ function App() {
         )
       }
 
-      <div className="max-w mx-auto px-4 mt-40 ml-60 mr-60">
-        {data.length === 0 ? (
-          <>
+      <div className="max-w mx-auto px-4 mt-90 ml-60 mr-60">
+        {filteredData.length === 0 ? (
+          data.length === 0 ? (<>
             <div className="flex join join-vertical join-justify-center mb-10">
               <h2 className="text-center join-item font-bold text-4xl mb-50">Nessun libro presente.</h2>
               <h2 className="text-center join-item font-bold text-xl">Creane uno o lasciali generare a Faker!</h2>
             </div>
 
-          </>
+          </>) : (
+            <div className="flex join join-vertical join-justify-center mb-10">
+              <h2 className="text-center join-item font-bold text-4xl mb-50">Nessun libro presente.</h2>
+              <h2 className="text-center join-item font-bold text-xl">I criteri di ricerca non corrispondono</h2>
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-15">
-            {data.map((item) => (
-                <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
-                  <h3>{item.titolo}</h3>
-                  <p>Autore: {item.autore}</p>
-                  <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
-                  <p>Genere: {item.genere}</p>
-                  <p>Formato: {item.formato}</p>
-                  <p>{item.isbn}</p>
-                  <div className="join join-horizontal flex align-left space-x-3 mt-4">
-                    {/* Info libro */}
-                    <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
-                      <img src=" assets/info.svg" alt="Info Libro" width="30" height="30" />
-                    </button>
-                    {/* Modifica libro */}
-                    <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
-                      <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
-                    </button>
-                  </div>
 
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-15">
+            {filteredData.map((item) => (
+              <div key={item.isbn} className="card glass p-6 mb-4 shadow-lg text-center space-y-2">
+                <h3>{item.titolo}</h3>
+                <p>Autore: {item.autore}</p>
+                <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
+                <p>Genere: {item.genere}</p>
+                <p>Formato: {item.formato}</p>
+                <p>{item.isbn}</p>
+                <div className="join join-horizontal flex align-left space-x-3 mt-4">
+                  {/* Info libro */}
+                  <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
+                    <img src=" assets/info.svg" alt="Info Libro" width="30" height="30" />
+                  </button>
+                  {/* Modifica libro */}
+                  <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
+                    <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
+                  </button>
                 </div>
-              ))}
-          </div>)
+
+              </div>
+            ))}
+          </div>
+        )
         }
       </div>
 
