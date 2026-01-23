@@ -10,6 +10,9 @@ function App() {
   const [showFormModifica, setShowFormModifica] = useState(false)
   const [libroDaModificare, setLibroDaModificare] = useState(null)
 
+  const [generi, setGeneri] = useState([])
+  const [formati, setFormati] = useState([])
+
   const [libroEsempio, setLibroEsempio] = useState(null)
 
   const modificaLibro = (libro) => {
@@ -139,6 +142,7 @@ function App() {
           console.error('Qualcosa non funziona nella GET dei generi')
         }
         const generi = await response.json()
+        setGeneri(generi)
         // console.log(`Generi disponibili: ${JSON.stringify(generi)}`)
       } catch (error) {
         console.error('Error fetching generi:', error)
@@ -154,6 +158,7 @@ function App() {
           console.error('Qualcosa non funziona nella GET dei formati')
         }
         const formati = await response.json()
+        setFormati(formati)
         // console.log(`Formati disponibili: ${JSON.stringify(formati)}`)
       } catch (error) {
         console.error('Error fetching formati:', error)
@@ -235,31 +240,34 @@ function App() {
           {/* Navbar */}
           <div className="bg-gray-800 mx-10 py-5 mt-10 rounded-xl shadow-lg">
             {/* Bottoni */}
-            <div className="join join-horizontal z-5 flex margin-auto mx-15 space-x-10 space-y-auto">
+            <div className="navbar-start">
               {/* Tasto aggiungi */}
-              <button type="button" className="btn btn-circle btn-ghost 0" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
-                <img src=" assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
-              </button>
+              <div className="join join-horizontal flex items-center justify-center space-x-3 ml-3">
+                <button type="button" className="btn btn-circle btn-ghost 0" onClick={() => setFormAggiunta((statoPrec) => !statoPrec)}>
+                  <img src=" assets/aggiungi.svg" alt="Aggiungi Libro" width="64" height="64" />
+                </button>
 
-              {/* Tasto genera libri */}
-              <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition" onClick={generaLibri}>
-                <img src=" assets/random.svg" alt="Genera Libri" width="64" height="64" />
-              </button>
+                {/* Tasto genera libri */}
+                <button type="button" className="btn btn-circle text-green-600 hover:rotate-180 transition" onClick={generaLibri}>
+                  <img src=" assets/random.svg" alt="Genera Libri" width="64" height="64" />
+                </button>
 
-              {
-                // Tasto elimina 
-                data.length !== 0 &&
-                <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
-                  <img src=" assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
-                </button>}
+                {
+                  // Tasto elimina 
+                  data.length !== 0 &&
+                  <button type="button" className="btn btn-ghost btn-circle" onClick={() => setShowEliminaTutto(true)}>
+                    <img src=" assets/cestino.svg" alt="Elimina Tutto" width="64" height="64" />
+                  </button>}
+              </div>
+
             </div>
 
             {/* Barra di ricerca */}
-            <div className="join-item flex justify-center my-auto">
+            <div className="navbar-center">
               <input
                 type="text"
                 placeholder="Cerca un libro..."
-                className="input input-bordered w-full max-w-xs"
+                className="input input-bordered w-full-lg"
                 onChange={(e) => {
                   setQuery(e.target.value)
                   filterData(e.target.value)
@@ -325,10 +333,26 @@ function App() {
 
                   <h3 className="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
 
+                  <label htmlFor="titolo">Titolo</label>
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="titolo" placeholder={libroEsempio.titolo} required />
+                  <label htmlFor="autore">Autore</label>
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="autore" placeholder={libroEsempio.autore} required />
+                  <label htmlFor="anno">Anno</label>
                   <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="number" name="anno" placeholder={libroEsempio.anno} required />
-                  <input className="input-lg input-primary input-bordered w-full join-item mb-4" type="text" name="genere" placeholder={libroEsempio.genere} required />
+
+                  <select className="input-lg input-primary input-bordered w-full join-item mb-4" name="genere" required defaultValue="">
+                    <option value="" disabled>Seleziona un genere</option>
+                    {(generi || []).map((g) => (
+                      <option key={g} value={g} className="text-gray-500">{g}</option>
+                    ))}
+                  </select>
+
+                  <select className="input-lg input-primary input-bordered w-full join-item mb-4" name="formato" required defaultValue="">
+                    <option value="" disabled>Seleziona un formato</option>
+                    {(formati || []).map((f) => (
+                      <option key={f} value={f} className="text-gray-500">{f}</option>
+                    ))}
+                  </select>
 
                   <div className="join join-horizontal flex items-center justify-center">
                     <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Aggiungi</button>
@@ -363,7 +387,7 @@ function App() {
                       'autore': formData.get('autore'),
                       'anno': formData.get('anno'),
                       'genere': formData.get('genere'),
-                      'formato': libroDaModificare.formato,
+                      'formato': formData.get('formato'),
                       'isbn': libroDaModificare.isbn
                     }
                     // console.log(libroModificato)
@@ -374,6 +398,7 @@ function App() {
                         libro.autore = libroModificato.autore
                         libro.anno = libroModificato.anno
                         libro.genere = libroModificato.genere
+                        libro.formato = libroModificato.formato
                       }
                     })
                     setData([...data])
@@ -397,6 +422,20 @@ function App() {
 
                     <label className="block text-sm font-medium mb-2">Genere</label>
                     <input className="input-lg input-primary input-bordered join-item mb-4 text-center" type="text" name="genere" placeholder="Genere" required defaultValue={libroDaModificare.genere} />
+
+                    <select className="input-lg input-primary input-bordered w-full join-item mb-4" name="genere" required defaultValue="">
+                      <option value="" disabled>Seleziona un genere</option>
+                      {(generi || []).map((g) => (
+                        <option key={g} value={g} className="text-gray-500">{g} {libroDaModificare.genere === g && "(attuale)"}</option>
+                      ))}
+                    </select>
+
+                    <select className="input-lg input-primary input-bordered w-full join-item mb-4" name="formato" required defaultValue="">
+                      <option value="" disabled>Seleziona un formato</option>
+                      {(formati || []).map((f) => (
+                        <option key={f} value={f} className="text-gray-500">{f} {libroDaModificare.formato === f && "(attuale)"}</option>
+                      ))}
+                    </select>
 
                     <div className="join join-horizontal flex items-center justify-center">
                       <button className="join-item btn btn-primary ml-3 mx-auto" type="submit">Modifica</button>
