@@ -91,10 +91,12 @@ def genera_esempio():
 
 @app.route('/api/data/get', methods=['GET'])
 def get_data():
-    libri = []
-    for _ in range(20):
-        libro = genera_libro()
-        libri.append(libro)
+    global libri
+    if len(libri) == 0:
+        libri = []
+        for _ in range(20):
+            libro = genera_libro()
+            libri.append(libro)
     return libri, 200
 
 

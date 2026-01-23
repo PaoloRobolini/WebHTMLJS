@@ -8,6 +8,7 @@ function App() {
   const [showFormAggiunta, setFormAggiunta] = useState(false)
   const [showEliminatutto, setShowEliminaTutto] = useState(false)
   const [showFormModifica, setShowFormModifica] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
   const [libroDaModificare, setLibroDaModificare] = useState(null)
 
   const [generi, setGeneri] = useState([])
@@ -15,15 +16,6 @@ function App() {
 
   const [libroEsempio, setLibroEsempio] = useState(null)
 
-  const modificaLibro = (libro) => {
-    setLibroDaModificare(libro)
-    setShowFormModifica(true)
-  }
-
-
-  const modificaLibroInfo = (libro) => {
-    setLibroDaModificare(libro)
-  }
 
 
   const eliminaLibro = async (isbn) => {
@@ -89,8 +81,9 @@ function App() {
   const filterData = (query) => {
     console.log(`Filtrando per query: ${query}`)
     const filtered = data.filter(libro =>
-      libro.titolo.toLowerCase().includes(query.toLowerCase()) ||
-      libro.autore.toLowerCase().includes(query.toLowerCase())
+      libro.genere.toLowerCase().includes(query.toLowerCase()) ||
+      libro.autore.toLowerCase().includes(query.toLowerCase()) ||
+      libro.titolo.toLowerCase().includes(query.toLowerCase())
     )
     setFilteredData(filtered)
   }
@@ -223,11 +216,12 @@ function App() {
         if (showFormAggiunta) setFormAggiunta(false)
         if (showEliminatutto) setShowEliminaTutto(false)
         if (showFormModifica) setShowFormModifica(false)
+        if (showInfo) setShowInfo(false)
       }
     }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
-  }, [showFormAggiunta, showEliminatutto, showFormModifica])
+  }, [showFormAggiunta, showEliminatutto, showFormModifica, showInfo])
 
   return (
     <>
@@ -266,7 +260,7 @@ function App() {
             <div className="navbar-center">
               <input
                 type="text"
-                placeholder="Cerca un libro..."
+                placeholder="Cerca un libro per genere, autore o titolo..."
                 className="input input-bordered w-full-lg"
                 onChange={(e) => {
                   setQuery(e.target.value)
@@ -461,6 +455,35 @@ function App() {
         )
       }
 
+      {/* FORM INFO LIBRO */}
+      {
+        (showInfo &&
+
+          <div className="fixed inset-0 glass flex items-center justify-center z-50">
+            <div className="bg-gray-600 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+              <div className="flex justify-end items-center space-x-3">
+                <div className="w-full align-middle">
+                  <div className="join join-vertical flex text-center justify-center">
+                    <h3 className="font-bold text-4xl mb-4">Info libro</h3>
+                    <p className="text-lg mb-2"><strong>Titolo:</strong> {libroDaModificare.titolo}</p>
+                    <p className="text-lg mb-2"><strong>Autore:</strong> {libroDaModificare.autore}</p>
+                    <p className="text-lg mb-2"><strong>Anno pubblicazione:</strong> {libroDaModificare.anno > 0 ? libroDaModificare.anno : `${-libroDaModificare.anno} a.C.`}</p>
+                    <p className="text-lg mb-2"><strong>Genere:</strong> {libroDaModificare.genere}</p>
+                    <p className="text-lg mb-2"><strong>Formato:</strong> {libroDaModificare.formato}</p>
+                    <p className="text-lg mb-4"><strong>ISBN:</strong> {libroDaModificare.isbn}</p>
+                    <div className="join join-horizontal flex items-center justify-center">
+                      <button onClick={() => {
+                        setShowInfo(false)
+                      }} className="btn btn-neutral mr-3 mx-auto">Chiudi</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
       <div className="max-w mx-auto px-4 mt-90 ml-60 mr-60">
         {filteredData.length === 0 ? (
           data.length === 0 ? (<>
@@ -485,15 +508,23 @@ function App() {
                 <p>Anno: {item.anno > 0 ? item.anno : `${-item.anno} a.C.`}</p>
                 <p>Genere: {item.genere}</p>
                 <p>Formato: {item.formato}</p>
-                <p>{item.isbn}</p>
+                <div className="rounded-box px-1 border mx-auto overflow-hidden">
+                  <p>{item.isbn}</p>
+                </div>
                 <div className="join join-horizontal flex align-left space-x-3 mt-4">
                   {/* Info libro */}
-                  <button onClick={() => modificaLibro(item)} className="btn btn-ghost btn-circle">
-                    <img src=" assets/info.svg" alt="Info Libro" width="30" height="30" />
+                  <button onClick={() =>{
+                    setLibroDaModificare(item)
+                    setShowInfo(true)
+                    }} className="btn btn-ghost btn-circle">
+                    <img src="assets/info.svg" alt="Info Libro" width="30" height="30" />
                   </button>
                   {/* Modifica libro */}
-                  <button onClick={() => modificaLibro(item)} className="btn btn-warning btn-circle">
-                    <img src=" assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
+                  <button onClick={() => {
+                    setLibroDaModificare(item)
+                    setShowFormModifica(true)
+                  }} className="btn btn-warning btn-circle">
+                    <img src="assets/matita.svg" alt="Modifica Libro" width="30" height="30" />
                   </button>
                 </div>
 
